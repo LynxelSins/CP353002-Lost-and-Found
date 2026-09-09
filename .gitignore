@@ -45,3 +45,4 @@ Desktop.ini
 *.log
 .neon
 .env.local
+node_modules/
