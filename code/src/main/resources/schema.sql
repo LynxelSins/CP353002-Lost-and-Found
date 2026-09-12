@@ -23,11 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email         VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-<<<<<<< HEAD
-    role          VARCHAR(20)  NOT NULL DEFAULT 'USER', -- USER, ADMIN
-=======
     role          VARCHAR(20)  NOT NULL DEFAULT 'USER', -- USER, STAFF
->>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
     created_at    TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at    TIMESTAMP,
     CONSTRAINT uq_users_email UNIQUE (email),
@@ -85,11 +81,7 @@ CREATE TABLE IF NOT EXISTS reports (
     description     TEXT,
     location_name   VARCHAR(255) NOT NULL,
     event_timestamp TIMESTAMP NOT NULL,
-<<<<<<< HEAD
-    status          VARCHAR(20) NOT NULL DEFAULT 'OPEN',      -- OPEN, MATCH_PENDING, CLAIMED, CLOSED
-=======
     status          VARCHAR(20) NOT NULL DEFAULT 'OPEN',      -- OPEN, MATCH_PENDING, CLAIMED, CLOSED, REJECTED
->>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
     created_at      TIMESTAMP NOT NULL DEFAULT now(),
     updated_at      TIMESTAMP,
     CONSTRAINT fk_report_user FOREIGN KEY (user_id)
