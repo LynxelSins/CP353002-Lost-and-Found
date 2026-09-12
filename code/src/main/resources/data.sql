@@ -7,6 +7,7 @@
 -- USERS (8 คน) -- password_hash เป็นค่า mock ไม่ใช่ BCrypt จริง (สำหรับ dev เท่านั้น)
 -- ---------------------------------------------------------------------
 INSERT INTO users (email, password_hash, role) VALUES
+<<<<<<< HEAD
 ('alice@example.com', '$2a$10$mockHashAlice000000000000000000000000000000000000000', 'USER'),
 ('bob@example.com',   '$2a$10$mockHashBob0000000000000000000000000000000000000000',  'USER'),
 ('carol@example.com', '$2a$10$mockHashCarol00000000000000000000000000000000000000', 'USER'),
@@ -15,6 +16,16 @@ INSERT INTO users (email, password_hash, role) VALUES
 ('frank@example.com', '$2a$10$mockHashFrank00000000000000000000000000000000000000', 'USER'),
 ('grace@example.com', '$2a$10$mockHashGrace00000000000000000000000000000000000000', 'ADMIN'),
 ('heidi@example.com', '$2a$10$mockHashHeidi00000000000000000000000000000000000000', 'USER');
+=======
+('alice@example.com', '$2a$10$mockHashAlice000', 'USER'),
+('bob@example.com',   '$2a$10$mockHashBob000',  'USER'),
+('carol@example.com', '$2a$10$mockHashCarol000', 'USER'),
+('dave@example.com',  '$2a$10$mockHashDave000', 'USER'),
+('eve@example.com',   '$2a$10$mockHashEve000', 'USER'),
+('frank@example.com', '$2a$10$mockHashFrank000', 'USER'),
+('grace@example.com', '$2a$10$mockHashGrace000', 'STAFF'),
+('heidi@example.com', '$2a$10$mockHashHeidi000', 'USER');
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
 
 -- ---------------------------------------------------------------------
 -- USER PROFILES (8 รายการ)
@@ -57,7 +68,11 @@ INSERT INTO tags (tag_name) VALUES
 ('white'), ('small'), ('large'), ('engraved');
 
 -- ---------------------------------------------------------------------
+<<<<<<< HEAD
 -- REPORTS (9 รายการ) -- ไม่มี REJECTED แล้ว, ไม่มี latitude/longitude
+=======
+-- REPORTS (10 รายการ) -- รวม REJECTED 1 รายการ (ตัวประกาศถูกปฏิเสธ ไม่ใช่ claim)
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
 -- ---------------------------------------------------------------------
 INSERT INTO reports (user_id, category_id, type, title, description, location_name, event_timestamp, status)
 SELECT u.user_id, c.category_id, 'LOST', 'ลืมโทรศัพท์ iPhone 14 ที่โรงอาหาร',
@@ -113,6 +128,15 @@ SELECT u.user_id, c.category_id, 'FOUND', 'พบแว่นตาที่ห�
        'ห้องน้ำอาคาร A ชั้น 2', now() - INTERVAL '30 minutes', 'OPEN'
 FROM users u, categories c WHERE u.email='heidi@example.com' AND c.category_name='Accessories';
 
+<<<<<<< HEAD
+=======
+INSERT INTO reports (user_id, category_id, type, title, description, location_name, event_timestamp, status)
+SELECT u.user_id, c.category_id, 'LOST', 'เสื้อแจ็คเก็ตสีเทาหาย',
+       'แจ็คเก็ตยี่ห้อ Uniqlo ไซส์ M',
+       'ห้องเรียนรวม 1', now() - INTERVAL '1 day', 'REJECTED'
+FROM users u, categories c WHERE u.email='dave@example.com' AND c.category_name='Clothing';
+
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
 -- ---------------------------------------------------------------------
 -- REPORT IMAGES (8 รายการ)
 -- ---------------------------------------------------------------------
@@ -162,7 +186,11 @@ SELECT r.report_id, u.user_id, 'มีประวัติการซื้อ
 FROM reports r, users u WHERE r.title LIKE 'กระเป๋าเป้สีดำหาย%' AND u.email='dave@example.com';
 
 -- ---------------------------------------------------------------------
+<<<<<<< HEAD
 -- REPORT STATUS LOGS (7 รายการ) -- changed_by แทน actor_id
+=======
+-- REPORT STATUS LOGS (9 รายการ) -- changed_by แทน actor_id
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
 -- ---------------------------------------------------------------------
 INSERT INTO report_status_logs (report_id, changed_by, old_status, new_status)
 SELECT r.report_id, u.user_id, NULL, 'OPEN'
@@ -184,7 +212,17 @@ SELECT r.report_id, u.user_id, NULL, 'OPEN'
 FROM reports r, users u WHERE r.title LIKE 'พบแว่นตา%' AND u.email='heidi@example.com'
 UNION ALL
 SELECT r.report_id, u.user_id, NULL, 'OPEN'
+<<<<<<< HEAD
 FROM reports r, users u WHERE r.title LIKE 'บัตรนักศึกษาหาย%' AND u.email='heidi@example.com';
+=======
+FROM reports r, users u WHERE r.title LIKE 'บัตรนักศึกษาหาย%' AND u.email='heidi@example.com'
+UNION ALL
+SELECT r.report_id, u.user_id, NULL, 'OPEN'
+FROM reports r, users u WHERE r.title LIKE 'เสื้อแจ็คเก็ตสีเทาหาย%' AND u.email='dave@example.com'
+UNION ALL
+SELECT r.report_id, u.user_id, 'OPEN', 'REJECTED'
+FROM reports r, users u WHERE r.title LIKE 'เสื้อแจ็คเก็ตสีเทาหาย%' AND u.email='grace@example.com';
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
 
 -- ---------------------------------------------------------------------
 -- REPORT TAGS (10 รายการ) -- Composite PK (report_id, tag_id)
@@ -232,4 +270,8 @@ SELECT r.report_id, u.user_id FROM reports r, users u WHERE r.title LIKE 'พบ
 UNION ALL
 SELECT r.report_id, u.user_id FROM reports r, users u WHERE r.title LIKE 'กระเป๋าเป้สีดำหาย%' AND u.email='dave@example.com'
 UNION ALL
+<<<<<<< HEAD
 SELECT r.report_id, u.user_id FROM reports r, users u WHERE r.title LIKE 'พบแว่นตา%'         AND u.email='carol@example.com';
+=======
+SELECT r.report_id, u.user_id FROM reports r, users u WHERE r.title LIKE 'พบแว่นตา%'         AND u.email='carol@example.com';
+>>>>>>> ef18fe086e9a24c4ce017fa910f125807fcf614d
