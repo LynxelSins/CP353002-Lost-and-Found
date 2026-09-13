@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: CP353002_Group12_LostAndFound
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lost_and_found?sslmode=disable
+    username: your_local_user
+    password: your_local_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  sql:
+    init:
+      mode: always
+
+  doc:
+    api-docs:
+      path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
