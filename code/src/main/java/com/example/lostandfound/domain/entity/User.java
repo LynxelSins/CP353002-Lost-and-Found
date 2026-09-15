@@ -29,8 +29,11 @@ public class User extends AuditableEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash")
     private String passwordHash;
+
+    @Column(name = "firebase_uid", unique = true, length = 128)
+    private String firebaseUid;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
