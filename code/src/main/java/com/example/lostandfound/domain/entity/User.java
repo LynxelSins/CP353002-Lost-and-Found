@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * ผู้ใช้งานระบบ (UUID PK เพื่อกัน Enumeration Attack)
+ * ผู้ใช้งานระบบ
  */
 @Getter
 @Setter
