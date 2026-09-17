@@ -1,12 +1,10 @@
 -- ===================================================================
 -- CP353002 Lost and Found System - Database Schema
--- Source of Truth (ddl-auto=validate: Hibernate จะไม่สร้าง/แก้ตารางเอง)
---
 -- ID Strategy (Hybrid):
 --   - UUID  : ตารางที่ผู้ใช้เข้าถึงผ่าน URL ได้ตรง ๆ (users, user_profiles, reports, claims)
---             -> กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
+--              กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
 --   - BIGINT: Master data และตารางภายใน (categories, tags, report_images,
---             report_watchers, report_status_logs) -> เร็วกว่า ประหยัดพื้นที่กว่า
+--             report_watchers, report_status_logs)
 --
 -- Audit Strategy:
 --   - AuditableEntity : created_at + updated_at (แก้ไขได้)
