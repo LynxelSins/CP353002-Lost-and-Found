@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 /**
- * ประวัติการเปลี่ยนสถานะของประกาศ — เป็น log ที่ห้ามแก้ไขย้อนหลัง จึงเป็น ImmutableEntity
- * changed_by เป็น nullable + ON DELETE SET NULL เพราะ log ต้องอยู่ต่อแม้ user ที่กระทำจะถูกลบไปแล้ว
+ * ประวัติการเปลี่ยนสถานะของประกาศ — เป็น log ที่ห้ามแก้ไขย้อนหลัง
  */
 @Getter
 @Setter

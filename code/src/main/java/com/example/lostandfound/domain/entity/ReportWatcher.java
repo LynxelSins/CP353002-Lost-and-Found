@@ -6,7 +6,7 @@ import lombok.*;
 
 /**
  * ผู้ติดตามประกาศ — กด "Watch" แล้วจะได้รับแจ้งเตือนเมื่อสถานะประกาศเปลี่ยน (Observer Pattern)
- * มี unique constraint (report_id, user_id) ที่ schema.sql กันกด watch ซ้ำ
+ * มี unique constraint (report_id, user_id)
  */
 @Getter
 @Setter
