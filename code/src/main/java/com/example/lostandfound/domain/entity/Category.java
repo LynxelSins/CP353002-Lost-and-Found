@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * หมวดหมู่ของประกาศ (Master Data) — BIGINT PK เพราะเป็นข้อมูลคงที่ ไม่ต้องกัน Enumeration
+ * หมวดหมู่ของประกาศ เป็นข้อมูลคงที่ ไม่ต้องกัน Enumeration
  * แต่ยัง extends AuditableEntity เพราะแอดมินแก้ไขชื่อ/รายละเอียดได้ภายหลัง
  */
 @Getter
