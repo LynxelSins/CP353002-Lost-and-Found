@@ -10,6 +10,7 @@
         <version>3.4.3</version>
         <relativePath/>
     </parent>
+    
 
     <groupId>com.example</groupId>
     <artifactId>CP353002_Group12_LostAndFound</artifactId>
@@ -21,9 +22,42 @@
         <java.version>17</java.version>
         <springdoc.version>2.8.5</springdoc.version>
         <lombok.version>1.18.38</lombok.version>
+        <!-- ค่า default: exclude integration tests ตอน `mvn test` ปกติ
+             override ได้จริงด้วย: mvn test -DexcludeIntegrationTests= (เว้นว่างไว้) -->
+        <excludeIntegrationTests>integration</excludeIntegrationTests>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Firebase Admin SDK (verify Google ID tokens) -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.4.3</version>
+        </dependency>
         <!-- Spring Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -72,6 +106,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring Security Test (@WithMockUser, etc.) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Testcontainers BOM (managed versions) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -94,6 +135,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -108,6 +150,17 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Maven Surefire: exclude integration tests by default
+                 (ผูกกับ property แล้ว จะ override จาก command line ได้จริง) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>${excludeIntegrationTests}</excludedGroups>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -120,6 +173,29 @@
                     </excludes>
                 </configuration>
             </plugin>
+
+            <!-- JaCoCo: coverage report -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

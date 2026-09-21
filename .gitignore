@@ -46,3 +46,6 @@ Desktop.ini
 .neon
 .env.local
 ืnode_modules/
+
+###Frie base###
+firebase-service-account.json
