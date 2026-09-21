@@ -1,12 +1,10 @@
 -- ===================================================================
 -- CP353002 Lost and Found System - Database Schema
--- Source of Truth (ddl-auto=validate: Hibernate จะไม่สร้าง/แก้ตารางเอง)
---
 -- ID Strategy (Hybrid):
 --   - UUID  : ตารางที่ผู้ใช้เข้าถึงผ่าน URL ได้ตรง ๆ (users, user_profiles, reports, claims)
---             -> กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
+--              กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
 --   - BIGINT: Master data และตารางภายใน (categories, tags, report_images,
---             report_watchers, report_status_logs) -> เร็วกว่า ประหยัดพื้นที่กว่า
+--             report_watchers, report_status_logs)
 --
 -- Audit Strategy:
 --   - AuditableEntity : created_at + updated_at (แก้ไขได้)
@@ -22,12 +20,15 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS users (
     user_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email         VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),           -- nullable: ผู้ใช้ที่ login ด้วย Google ไม่มีรหัสผ่านของตัวเอง
+    firebase_uid  VARCHAR(128),           -- nullable: มีค่าเฉพาะผู้ใช้ที่ login ผ่าน Google/Firebase
     role          VARCHAR(20)  NOT NULL DEFAULT 'USER', -- USER, STAFF
     created_at    TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at    TIMESTAMP,
     CONSTRAINT uq_users_email UNIQUE (email),
-    CONSTRAINT chk_users_role CHECK (role IN ('USER', 'STAFF'))
+    CONSTRAINT uq_users_firebase_uid UNIQUE (firebase_uid),
+    CONSTRAINT chk_users_role CHECK (role IN ('USER', 'STAFF')),
+    CONSTRAINT chk_users_auth_method CHECK (password_hash IS NOT NULL OR firebase_uid IS NOT NULL)
 );
 
 -- ===================================================================
@@ -163,7 +164,7 @@ CREATE TABLE IF NOT EXISTS claims (
     created_at          TIMESTAMP NOT NULL DEFAULT now(),
     updated_at          TIMESTAMP,
     CONSTRAINT fk_claim_report FOREIGN KEY (report_id)
-        REFERENCES reports (report_id) ON DELETE RESTRICT,
+    REFERENCES reports (report_id) ON DELETE CASCADE,
     CONSTRAINT fk_claim_user FOREIGN KEY (claimant_id)
         REFERENCES users (user_id) ON DELETE RESTRICT,
     CONSTRAINT chk_claim_status CHECK (claim_status IN ('PENDING', 'APPROVED', 'REJECTED'))

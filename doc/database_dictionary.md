@@ -9,10 +9,13 @@ This dictionary describes all tables defined in `schema.sql` for the **CP353002 
 |---|---|---|---|
 | `user_id` | `UUID` | Primary Key, Default `gen_random_uuid()` | Unique identifier for each user |
 | `email` | `VARCHAR(255)` | `NOT NULL`, Unique (`uq_users_email`) | User email address |
-| `password_hash` | `VARCHAR(255)` | `NOT NULL` | Hashed password |
-| `role` | `VARCHAR(20)` | `NOT NULL`, Default `'USER'`, Check `role IN ('USER','ADMIN')` | User role (USER or ADMIN) |
+| `password_hash` | `VARCHAR(255)` | Nullable | Hashed password. `NULL` for users who authenticate via Google only |
+| `firebase_uid` | `VARCHAR(128)` | Nullable, Unique (`uq_users_firebase_uid`) | Firebase UID, set only for users who signed in with Google |
+| `role` | `VARCHAR(20)` | `NOT NULL`, Default `'USER'`, Check `role IN ('USER','STAFF')` | User role (USER or STAFF) |
 | `created_at` | `TIMESTAMP` | `NOT NULL`, Default `now()` | Record creation timestamp |
 | `updated_at` | `TIMESTAMP` | Nullable | Record update timestamp |
+
+**Check constraint**: `chk_users_auth_method` — `password_hash IS NOT NULL OR firebase_uid IS NOT NULL`. Every user must have at least one login method; both may be set at once (dual-auth).
 
 **Indexes**: none defined beyond primary key.
 
@@ -56,14 +59,14 @@ This dictionary describes all tables defined in `schema.sql` for the **CP353002 
 | Column | Type | Constraints | Description |
 |---|---|---|---|
 | `report_id` | `UUID` | Primary Key, Default `gen_random_uuid()` |
-| `user_id` | `UUID` | `NOT NULL`, FK → `users(user_id)` ON DELETE RESTRICT |
-| `category_id` | `BIGINT` | `NOT NULL`, FK → `categories(category_id)` ON DELETE RESTRICT |
+| `user_id` | `UUID` | Nullable, FK → `users(user_id)` ON DELETE SET NULL | Report survives even if the reporting user is deleted |
+| `category_id` | `BIGINT` | Nullable, FK → `categories(category_id)` ON DELETE SET NULL | Report survives even if the category is deleted |
 | `type` | `VARCHAR(20)` | `NOT NULL`, Check `type IN ('LOST','FOUND')` |
 | `title` | `VARCHAR(200)` | `NOT NULL` |
 | `description` | `TEXT` | Nullable |
 | `location_name` | `VARCHAR(255)` | `NOT NULL` |
 | `event_timestamp` | `TIMESTAMP` | `NOT NULL` |
-| `status` | `VARCHAR(20)` | `NOT NULL`, Default `'OPEN'`, Check `status IN ('OPEN','MATCH_PENDING','CLAIMED','CLOSED')` |
+| `status` | `VARCHAR(20)` | `NOT NULL`, Default `'OPEN'`, Check `status IN ('OPEN','MATCH_PENDING','CLAIMED','CLOSED','REJECTED')` |
 | `created_at` | `TIMESTAMP` | `NOT NULL`, Default `now()` |
 | `updated_at` | `TIMESTAMP` | Nullable |
 
@@ -118,8 +121,8 @@ This dictionary describes all tables defined in `schema.sql` for the **CP353002 
 | Column | Type | Constraints | Description |
 |---|---|---|---|
 | `claim_id` | `UUID` | Primary Key, Default `gen_random_uuid()` |
-| `report_id` | `UUID` | `NOT NULL`, FK → `reports(report_id)` ON DELETE RESTRICT |
-| `claimant_id` | `UUID` | `NOT NULL`, FK → `users(user_id)` ON DELETE RESTRICT |
+| `report_id` | `UUID` | `NOT NULL`, FK → `reports(report_id)` ON DELETE CASCADE | Deleting a report deletes its claims too |
+| `claimant_id` | `UUID` | `NOT NULL`, FK → `users(user_id)` ON DELETE RESTRICT | A user with an existing claim cannot be deleted |
 | `evidence_text` | `TEXT` | Nullable |
 | `evidence_image_url` | `VARCHAR(500)` | Nullable |
 | `claim_status` | `VARCHAR(20)` | `NOT NULL`, Default `'PENDING'`, Check `claim_status IN ('PENDING','APPROVED','REJECTED')` |
@@ -131,7 +134,7 @@ This dictionary describes all tables defined in `schema.sql` for the **CP353002 
 
 **Indexes**: `idx_claims_report` on `report_id`; `idx_claims_claimant` on `claimant_id`
 
-**Partial Unique Index**: `idx_unique_pending_claim` ensures a user can have only one pending claim per report.
+**Partial Unique Index**: `idx_unique_pending_claim` ensures a user can have only one `PENDING` claim per report at a time.
 
 ---
 

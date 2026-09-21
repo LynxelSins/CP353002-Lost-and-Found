@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Lost and Found - Login</title>
+</head>
+<body>
+
+  <h1>เข้าสู่ระบบ</h1>
+
+  <button id="google-login-btn">Sign in with Google</button>
+
+  <p id="result"></p>
+
+  <!-- Firebase SDK (compat version = ใช้แบบ script tag ธรรมดาได้เลย ไม่ต้องมี build tool) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+
+  <script>
+    const BACKEND_URL = "http://localhost:8080"; // แก้เป็น URL จริงตอน deploy
+
+    document.getElementById("google-login-btn").addEventListener("click", () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          // ได้ user ที่ login สำเร็จแล้ว -> ขอ idToken เพื่อส่งให้ backend ตรวจสอบ
+          return result.user.getIdToken();
+        })
+        .then((idToken) => {
+          // ส่ง idToken ไปให้ backend verify แล้ว find-or-create user
+          return fetch(`${BACKEND_URL}/api/auth/google`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken })
+          });
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Backend response:", data);
+          document.getElementById("result").textContent =
+            "เข้าสู่ระบบสำเร็จ: " + JSON.stringify(data.data);
+        })
+        .catch((error) => {
+          console.error(error);
+          document.getElementById("result").textContent = "เกิดข้อผิดพลาด: " + error.message;
+        });
+    });
+  </script>
+
+</body>
+</html>
