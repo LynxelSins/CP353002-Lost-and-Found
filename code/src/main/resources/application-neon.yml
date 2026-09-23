@@ -8,9 +8,9 @@ spring:
   # ต้องตั้ง Environment Variable ก่อนรัน: DB_USERNAME, DB_PASSWORD
   # (DB_URL มีค่า default อยู่แล้ว ถ้าไม่ตั้งจะใช้ค่านี้)
   datasource:
-    url: ${DB_URL:jdbc:postgresql://ep-dawn-surf-b348agkp-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://ep-dawn-surf-b348agkp-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+    username: neondb_owner
+    password: "npg_9fiWzb1LoYnP"
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -24,7 +24,8 @@ spring:
 
   sql:
     init:
-      mode: always   # Neon เป็นฐานข้อมูลกลาง ยังไม่มีใครโหลด schema.sql/data.sql เข้าไปเอง -> ให้ Spring รันให้ตอน startup
+      mode: always   
+      # Neon เป็นฐานข้อมูลกลาง ยังไม่มีใครโหลด schema.sql/data.sql เข้าไปเอง -> ให้ Spring รันให้ตอน startup
 
 springdoc:
   api-docs:
