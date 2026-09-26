@@ -1,5 +1,6 @@
 package com.example.lostandfound.controller.api;
-
+import com.example.lostandfound.dto.response.UserResponse;  
+import org.springframework.web.bind.annotation.GetMapping; 
 import com.example.lostandfound.dto.request.ChangePasswordRequest;
 import com.example.lostandfound.dto.response.ApiResponse;
 import com.example.lostandfound.security.CurrentUser;
@@ -31,6 +32,11 @@ public class UserController {
         userService.changePassword(userId, request.getCurrentPassword(), request.getNewPassword());
         return ApiResponse.success("เปลี่ยนรหัสผ่านเรียบร้อย", null);
     }
+
+    @GetMapping
+public ApiResponse<UserResponse> getMe(@CurrentUser UUID userId) {
+    return ApiResponse.success(userService.getCurrentUser(userId));
+}
 
     @DeleteMapping("/password")
     public ApiResponse<Void> removePassword(@CurrentUser UUID userId) {
