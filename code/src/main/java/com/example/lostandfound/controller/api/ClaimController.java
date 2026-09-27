@@ -1,5 +1,9 @@
 package com.example.lostandfound.controller.api;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import com.example.lostandfound.dto.request.ApproveClaimRequest;
 import com.example.lostandfound.dto.request.SubmitClaimRequest;
 import com.example.lostandfound.dto.response.ApiResponse;
@@ -8,6 +12,8 @@ import com.example.lostandfound.security.CurrentUser;
 import com.example.lostandfound.service.ClaimService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +50,12 @@ public class ClaimController {
     @PatchMapping("/api/claims/{claimId}/reject")
     public ApiResponse<ClaimResponse> reject(@PathVariable UUID claimId, @CurrentUser UUID userId) {
         return ApiResponse.success(claimService.reject(claimId, userId));
+    }
+
+        @GetMapping("/api/claims/mine")
+    public ApiResponse<Page<ClaimResponse>> mine(
+            @CurrentUser UUID userId,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+        return ApiResponse.success(claimService.getMyClaims(userId, pageable));
     }
 }
