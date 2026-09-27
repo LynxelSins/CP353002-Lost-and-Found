@@ -1,6 +1,7 @@
 package com.example.lostandfound.service.impl;
 
 import com.example.lostandfound.domain.entity.User;
+import com.example.lostandfound.dto.request.UpdateProfileRequest;
 import com.example.lostandfound.dto.response.UserResponse; // <-- เพิ่ม import นี้
 import com.example.lostandfound.exception.BadRequestException;
 import com.example.lostandfound.exception.ResourceNotFoundException;
@@ -29,6 +30,23 @@ public class UserServiceImpl implements UserService {
     public UserResponse getCurrentUser(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "user_id", userId));
+        return UserResponse.fromEntity(user);
+    }
+
+        @Override
+    @Transactional
+    public UserResponse updateProfile(UUID userId, UpdateProfileRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "user_id", userId));
+
+        if (user.getProfile() == null) {
+            throw new ResourceNotFoundException("UserProfile", "user_id", userId);
+        }
+
+        user.getProfile().setFullName(request.getFullName());
+        user.getProfile().setPhoneNumber(request.getPhoneNumber());
+        userRepository.save(user);
+
         return UserResponse.fromEntity(user);
     }
 
