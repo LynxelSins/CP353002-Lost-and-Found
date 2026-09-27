@@ -132,6 +132,16 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public Page<ReportSummaryResponse> getMyReports(UUID userId, Pageable pageable) {
+        return reportRepository.findByUserId(userId, pageable).map(reportMapper::toSummary);
+    }
+
+    @Override
+    public Page<ReportSummaryResponse> getWatchedReports(UUID userId, Pageable pageable) {
+        return reportRepository.findWatchedByUserId(userId, pageable).map(reportMapper::toSummary);
+    }
+
+    @Override
     @Transactional
     public void watch(UUID reportId, UUID userId) {
         Report report = findEntityById(reportId);
@@ -176,15 +186,5 @@ public class ReportServiceImpl implements ReportService {
     private Report findEntityById(UUID id) {
         return reportRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Report", "id", id));
-    }
-
-    @Override
-    public Page<ReportSummaryResponse> getMyReports(UUID userId, Pageable pageable) {
-        return reportRepository.findByUserId(userId, pageable).map(reportMapper::toSummary);
-    }
-
-    @Override
-    public Page<ReportSummaryResponse> getWatchedReports(UUID userId, Pageable pageable) {
-        return reportRepository.findWatchedByUserId(userId, pageable).map(reportMapper::toSummary);
     }
 }
