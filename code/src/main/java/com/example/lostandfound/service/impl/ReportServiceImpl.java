@@ -178,7 +178,7 @@ public class ReportServiceImpl implements ReportService {
                 .orElseThrow(() -> new ResourceNotFoundException("Report", "id", id));
     }
 
-        @Override
+    @Override
     public Page<ReportSummaryResponse> getMyReports(UUID userId, Pageable pageable) {
         return reportRepository.findByUserId(userId, pageable).map(reportMapper::toSummary);
     }
