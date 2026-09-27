@@ -132,6 +132,16 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public Page<ReportSummaryResponse> getMyReports(UUID userId, Pageable pageable) {
+        return reportRepository.findByUserId(userId, pageable).map(reportMapper::toSummary);
+    }
+
+    @Override
+    public Page<ReportSummaryResponse> getWatchedReports(UUID userId, Pageable pageable) {
+        return reportRepository.findWatchedByUserId(userId, pageable).map(reportMapper::toSummary);
+    }
+
+    @Override
     @Transactional
     public void watch(UUID reportId, UUID userId) {
         Report report = findEntityById(reportId);
