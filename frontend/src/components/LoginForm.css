@@ -1,0 +1,386 @@
+/* =========================================
+   LOGIN FORM
+========================================= */
+
+.login-form {
+    width: min(100%, 475px);
+
+    padding: 38px 46px 35px;
+
+    background: white;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 15px 35px rgba(23, 61, 69, 0.1),
+        0 3px 10px rgba(23, 61, 69, 0.04);
+
+    text-align: left;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.login-header {
+    margin-bottom: 25px;
+}
+
+.login-header h2 {
+    margin: 0 0 5px;
+
+    color: #172033;
+
+    font-size: 31px;
+    line-height: 1.2;
+    font-weight: 800;
+
+    letter-spacing: -0.8px;
+}
+
+.login-header p {
+    margin: 0;
+
+    color: #7b8495;
+
+    font-size: 14px;
+}
+
+/* =========================================
+   FORM
+========================================= */
+
+.login-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-field {
+    width: 100%;
+}
+
+.form-field label,
+.password-label label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #384255;
+
+    font-size: 13px;
+    font-weight: 650;
+}
+
+/* =========================================
+   PASSWORD LABEL
+========================================= */
+
+.password-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.password-label label {
+    margin-bottom: 7px;
+}
+
+.forgot-password {
+    margin-bottom: 7px;
+
+    padding: 0;
+
+    border: none;
+    background: none;
+
+    color: #20aab6;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* =========================================
+   INPUT
+========================================= */
+
+.input-wrapper {
+    width: 100%;
+    height: 43px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 13px;
+
+    background: #f8fafb;
+
+    border: 1px solid #dfe3e8;
+
+    border-radius: 10px;
+
+    color: #99a3b3;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    background: white;
+
+    border-color: #22b1bd;
+
+    box-shadow: 0 0 0 3px rgba(34, 177, 189, 0.1);
+
+    color: #20aab6;
+}
+
+.input-wrapper input {
+    width: 100%;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #283244;
+
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.input-wrapper input::placeholder {
+    color: #a4adba;
+}
+
+/* =========================================
+   PASSWORD TOGGLE
+========================================= */
+
+.password-toggle {
+    flex-shrink: 0;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #98a2b1;
+
+    cursor: pointer;
+}
+
+/* =========================================
+   REMEMBER
+========================================= */
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: -2px;
+
+    color: #7c8492;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.remember-me input {
+    width: 14px;
+    height: 14px;
+
+    margin: 0;
+
+    accent-color: #28aeba;
+
+    cursor: pointer;
+}
+
+/* =========================================
+   SUBMIT BUTTON
+========================================= */
+
+.main-submit-button {
+    width: 100%;
+    height: 47px;
+
+    margin-top: 5px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #27aeb8;
+
+    color: white;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 750;
+
+    cursor: pointer;
+
+    box-shadow: 0 7px 15px rgba(39, 174, 184, 0.2);
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.main-submit-button:hover {
+    background: #209da7;
+
+    box-shadow: 0 9px 18px rgba(39, 174, 184, 0.26);
+}
+
+.main-submit-button:active {
+    transform: translateY(1px);
+}
+
+/* =========================================
+   DIVIDER
+========================================= */
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 23px 0 17px;
+}
+
+.or-divider span {
+    height: 1px;
+
+    flex: 1;
+
+    background: #e1e5e9;
+}
+
+.or-divider p {
+    margin: 0;
+
+    color: #9ba3af;
+
+    font-size: 12px;
+}
+
+/* =========================================
+   SOCIAL BUTTONS
+========================================= */
+
+.social-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+}
+
+.social-buttons button {
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 9px;
+
+    background: white;
+
+    color: #455064;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.social-buttons button:hover {
+    background: #f8fafb;
+    border-color: #cbd2da;
+}
+
+/* =========================================
+   SWITCH
+========================================= */
+
+.switch-auth {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: 23px;
+
+    color: #7e8796;
+
+    font-size: 12px;
+}
+
+.switch-auth button {
+    padding: 0;
+
+    border: none;
+    background: none;
+
+    color: #1caab5;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 750;
+
+    cursor: pointer;
+}
+
+.switch-auth button:hover {
+    text-decoration: underline;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+    .login-form {
+        padding: 30px 24px;
+        border-radius: 16px;
+    }
+
+    .login-header h2 {
+        font-size: 27px;
+    }
+
+    .social-buttons {
+        grid-template-columns: 1fr;
+    }
+}
