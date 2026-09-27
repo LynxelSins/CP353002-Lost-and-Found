@@ -1,0 +1,99 @@
+.item-card {
+    overflow: hidden;
+    background: white;
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(40, 75, 80, 0.07);
+}
+
+.item-image {
+    height: 175px;
+    background: #edf4f5;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.item-image-empty {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #8a959f;
+    font-size: 12px;
+}
+
+.item-card-content {
+    padding: 14px;
+}
+
+.item-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.item-status {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.item-status.lost {
+    background: #fff0f0;
+    color: #d65a5a;
+}
+
+.item-status.found {
+    background: #e8f8f6;
+    color: #1a9e91;
+}
+
+.item-card h3 {
+    margin: 9px 0 10px;
+    font-size: 15px;
+}
+
+.item-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #7a8591;
+    font-size: 11px;
+}
+
+.item-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+}
+
+.bookmark-button {
+    border: 0;
+    background: transparent;
+    color: #a0a9b2;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.bookmark-button.active {
+    color: #e34d5b;
+}
+
+.claim-button {
+    padding: 7px 13px;
+    border: 0;
+    border-radius: 6px;
+    background: #e9f7f8;
+    color: #1a9eaa;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
