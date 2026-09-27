@@ -38,7 +38,7 @@ public class ReportMapper {
                 .build();
     }
 
-    public ReportSummaryResponse toSummary(Report report) {
+        public ReportSummaryResponse toSummary(Report report) {
         String thumbnail = report.getImages().isEmpty() ? null : report.getImages().get(0).getImageUrl();
         return ReportSummaryResponse.builder()
                 .id(report.getId())
@@ -47,6 +47,8 @@ public class ReportMapper {
                 .locationName(report.getLocationName())
                 .status(report.getStatus())
                 .thumbnailUrl(thumbnail)
+                .watcherCount(report.getWatchers().size())   // เพิ่มใหม่
+                .claimCount(report.getClaims().size())       // เพิ่มใหม่
                 .createdAt(report.getCreatedAt())
                 .build();
     }
