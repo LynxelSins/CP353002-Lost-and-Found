@@ -1,5 +1,6 @@
 package com.example.lostandfound.service.impl;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.example.lostandfound.domain.entity.Claim;
 import com.example.lostandfound.domain.entity.Report;
 import com.example.lostandfound.domain.entity.User;
@@ -156,6 +157,11 @@ public class ClaimServiceImpl implements ClaimService {
         }
 
         return claimMapper.toResponse(claim);
+    }
+
+        @Override
+    public Page<ClaimResponse> getMyClaims(UUID claimantId, Pageable pageable) {
+        return claimRepository.findByClaimantId(claimantId, pageable).map(claimMapper::toResponse);
     }
 
     private void assertOwner(Report report, UUID userId) {
