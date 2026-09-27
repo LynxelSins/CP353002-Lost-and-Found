@@ -28,4 +28,15 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
                          @Param("tagName") String tagName,
                          @Param("keyword") String keyword,
                          Pageable pageable);
+
+        // ==== เพิ่มใหม่: ประกาศที่ user คนนี้เป็นคนโพสต์ ====
+    Page<Report> findByUserId(UUID userId, Pageable pageable);
+
+    // ==== เพิ่มใหม่: ประกาศที่ user คนนี้กด "ติดตาม" ไว้ ====
+    @Query("""
+            SELECT r FROM Report r
+            JOIN r.watchers w
+            WHERE w.user.id = :userId
+            """)
+    Page<Report> findWatchedByUserId(@Param("userId") UUID userId, Pageable pageable);
 }
