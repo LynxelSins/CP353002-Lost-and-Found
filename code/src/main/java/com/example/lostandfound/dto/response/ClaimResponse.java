@@ -1,6 +1,7 @@
 package com.example.lostandfound.dto.response;
 
 import com.example.lostandfound.domain.enums.ClaimStatus;
+import com.example.lostandfound.domain.enums.ReportStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +17,10 @@ import java.util.UUID;
 public class ClaimResponse {
     private UUID id;
     private UUID reportId;
+    private String reportTitle;          // เพิ่มใหม่
+    private String reportLocationName;   // เพิ่มใหม่
+    private ReportStatus reportStatus;   // เพิ่มใหม่
+    private String reportThumbnailUrl;   // เพิ่มใหม่
     private UUID claimantId;
     private String claimantName;
     private String evidenceText;

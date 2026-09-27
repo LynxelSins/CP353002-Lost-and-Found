@@ -1,7 +1,9 @@
 package com.example.lostandfound.exception;
 
-import com.example.lostandfound.dto.response.ApiErrorResponse;
-import jakarta.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -12,22 +14,24 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import com.example.lostandfound.dto.response.ApiErrorResponse;
+
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGeneral(Exception ex) {
+
         ApiErrorResponse error = ApiErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
-                .status(HttpStatus.NOT_FOUND.value())
-                .error(HttpStatus.NOT_FOUND.getReasonPhrase())
-                .message(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                .message("An unexpected error occurred")
                 .build();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     @ExceptionHandler(BadRequestException.class)
@@ -64,16 +68,19 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * ครอบคลุมทั้ง @PreAuthorize ปฏิเสธสิทธิ์ (AccessDeniedException / AuthorizationDeniedException
-     * ตัวใหม่ใน Spring Security 6) และกรณีไม่มี Authentication เลย
-     * (AuthenticationCredentialsNotFoundException) — จำเป็นเมื่อทดสอบด้วย
-     * @AutoConfigureMockMvc(addFilters = false) ที่ข้าม ExceptionTranslationFilter ไปเลย
-     * ทำให้ exception หลุดมาที่ handler ทั่วไปแทนที่จะถูกแปลงเป็น 403 อัตโนมัติ
+     * ครอบคลุมทั้ง @PreAuthorize ปฏิเสธสิทธิ์ (AccessDeniedException /
+     * AuthorizationDeniedException ตัวใหม่ใน Spring Security 6) และกรณีไม่มี
+     * Authentication เลย (AuthenticationCredentialsNotFoundException) —
+     * จำเป็นเมื่อทดสอบด้วย
+     *
+     * @AutoConfigureMockMvc(addFilters = false) ที่ข้าม
+     * ExceptionTranslationFilter ไปเลย ทำให้ exception หลุดมาที่ handler
+     * ทั่วไปแทนที่จะถูกแปลงเป็น 403 อัตโนมัติ
      */
     @ExceptionHandler({
-            AccessDeniedException.class,
-            AuthorizationDeniedException.class,
-            AuthenticationCredentialsNotFoundException.class
+        AccessDeniedException.class,
+        AuthorizationDeniedException.class,
+        AuthenticationCredentialsNotFoundException.class
     })
     public ResponseEntity<ApiErrorResponse> handleAccessDenied(RuntimeException ex) {
         ApiErrorResponse error = ApiErrorResponse.builder()
@@ -123,14 +130,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGeneral(Exception ex) {
-        ApiErrorResponse error = ApiErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("An unexpected error occurred")
-                .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
 }
