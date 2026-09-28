@@ -24,6 +24,8 @@ import com.example.lostandfound.service.strategy.ClaimEligibilityStrategyResolve
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,6 +95,13 @@ public class ClaimServiceImpl implements ClaimService {
                 .map(claimMapper::toResponse)
                 .toList();
     }
+
+    // ลองเพิ่ม public Page<ClaimResponse> getMyClaims
+    @Override
+    public Page<ClaimResponse> getMyClaims(UUID claimantId, Pageable pageable) {
+        return claimRepository.findByClaimantId(claimantId, pageable)
+            .map(claimMapper::toResponse);
+}
 
     @Override
     @Transactional
@@ -172,5 +181,7 @@ public class ClaimServiceImpl implements ClaimService {
     private Claim findClaim(UUID id) {
         return claimRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim", "id", id));
+                
     }
+
 }
