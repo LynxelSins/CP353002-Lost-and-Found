@@ -49,6 +49,5 @@ Desktop.ini
 
 ###Frie base###
 firebase-service-account.json
-node_modules\
 node_modules/.bin/jiti
 /node_modules
