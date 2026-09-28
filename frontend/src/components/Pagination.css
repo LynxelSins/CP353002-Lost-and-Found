@@ -1,0 +1,33 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination button {
+    min-width: 145px;
+    height: 40px;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid #dce3e5;
+    border-radius: 8px;
+    background: white;
+    color: #566170;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(30, 55, 60, 0.05);
+}
+
+.pagination button:hover {
+    border-color: #27aeb8;
+    color: #18a7b3;
+}
+
+.pagination span {
+    font-size: 15px;
+}
