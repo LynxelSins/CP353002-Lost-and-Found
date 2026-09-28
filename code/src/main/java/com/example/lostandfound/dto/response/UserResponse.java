@@ -20,6 +20,7 @@ public class UserResponse {
     private String email;
     private String fullName;
     private String phoneNumber;      // เพิ่มใหม่
+    private String avatarUrl;
     private UserRole role;
     private boolean hasPassword;
     private boolean linkedToGoogle;
@@ -31,6 +32,7 @@ public class UserResponse {
                 .email(user.getEmail())
                 .fullName(user.getProfile() != null ? user.getProfile().getFullName() : null)
                 .phoneNumber(user.getProfile() != null ? user.getProfile().getPhoneNumber() : null) // เพิ่มใหม่
+                .avatarUrl(user.getProfile() != null ? user.getProfile().getAvatarUrl() : null) // เพิ่มใหม่
                 .role(user.getRole())
                 .hasPassword(user.getPasswordHash() != null)
                 .linkedToGoogle(user.getFirebaseUid() != null)

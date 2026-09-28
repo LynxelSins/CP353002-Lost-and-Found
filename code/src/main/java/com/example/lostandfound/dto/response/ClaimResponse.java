@@ -17,6 +17,7 @@ public class ClaimResponse {
     private UUID id;
     private UUID reportId;
     private UUID claimantId;
+    private String claimantAvatarUrl;   // เพิ่มบรรทัดนี้
     private String claimantName;
     private String evidenceText;
     private String evidenceImageUrl;

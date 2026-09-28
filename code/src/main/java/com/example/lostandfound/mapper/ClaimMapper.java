@@ -12,6 +12,9 @@ public class ClaimMapper {
                 .id(claim.getId())
                 .reportId(claim.getReport().getId())
                 .claimantId(claim.getClaimant().getId())
+                .claimantAvatarUrl(claim.getClaimant().getProfile() != null
+                        ? claim.getClaimant().getProfile().getAvatarUrl()
+                        : null)
                 .claimantName(claim.getClaimant().getProfile() != null
                         ? claim.getClaimant().getProfile().getFullName()
                         : claim.getClaimant().getEmail())
