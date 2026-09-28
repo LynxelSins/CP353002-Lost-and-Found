@@ -193,3 +193,29 @@ CREATE TABLE IF NOT EXISTS report_tags (
 );
 
 CREATE INDEX IF NOT EXISTS idx_reporttags_tag ON report_tags (tag_id);
+
+-- ===================================================================
+-- 11. notifications  (BIGINT, ImmutableEntity + is_read)
+-- ===================================================================
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    recipient_id     UUID NOT NULL,
+    message          VARCHAR(500) NOT NULL,
+    is_read          BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at       TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT fk_notification_recipient FOREIGN KEY (recipient_id)
+        REFERENCES users (user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications (recipient_id, created_at DESC);
+
+-- ===================================================================
+-- 12. stored_files  (UUID, ImmutableEntity) — เก็บรูปที่อัปโหลด
+-- ===================================================================
+CREATE TABLE IF NOT EXISTS stored_files (
+    file_id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content_type VARCHAR(100) NOT NULL,
+    file_size    BIGINT       NOT NULL,
+    data         BYTEA        NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT now()
+);
