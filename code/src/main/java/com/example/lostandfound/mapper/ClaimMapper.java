@@ -20,6 +20,9 @@ public class ClaimMapper {
                 .reportStatus(report.getStatus())
                 .reportThumbnailUrl(thumbnail)
                 .claimantId(claim.getClaimant().getId())
+                .claimantAvatarUrl(claim.getClaimant().getProfile() != null
+                        ? claim.getClaimant().getProfile().getAvatarUrl()
+                        : null)
                 .claimantName(claim.getClaimant().getProfile() != null
                         ? claim.getClaimant().getProfile().getFullName()
                         : claim.getClaimant().getEmail())

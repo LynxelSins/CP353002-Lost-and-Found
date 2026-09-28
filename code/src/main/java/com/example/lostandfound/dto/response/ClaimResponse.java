@@ -22,6 +22,7 @@ public class ClaimResponse {
     private ReportStatus reportStatus;   // เพิ่มใหม่
     private String reportThumbnailUrl;   // เพิ่มใหม่
     private UUID claimantId;
+    private String claimantAvatarUrl;   // เพิ่มบรรทัดนี้
     private String claimantName;
     private String evidenceText;
     private String evidenceImageUrl;
