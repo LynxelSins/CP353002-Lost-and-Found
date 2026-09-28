@@ -1,4 +1,4 @@
-// controller/api/ReportController.java
+/// controller/api/ReportController.java
 package com.example.lostandfound.controller.api;
 
 import com.example.lostandfound.domain.enums.ReportStatus;
@@ -45,6 +45,20 @@ public class ReportController {
         return ApiResponse.success(reportService.search(type, status, categoryId, tag, keyword, pageable));
     }
 
+    @GetMapping("/mine")
+    public ApiResponse<Page<ReportSummaryResponse>> mine(
+            @CurrentUser UUID userId,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+        return ApiResponse.success(reportService.getMyReports(userId, pageable));
+    }
+
+    @GetMapping("/watched")
+    public ApiResponse<Page<ReportSummaryResponse>> watched(
+            @CurrentUser UUID userId,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable) {
+        return ApiResponse.success(reportService.getWatchedReports(userId, pageable));
+    }
+
     @GetMapping("/{id}")
     public ApiResponse<ReportResponse> getById(@PathVariable UUID id) {
         return ApiResponse.success(reportService.getById(id));
@@ -65,6 +79,6 @@ public class ReportController {
     @PostMapping("/{id}/close")
     public ApiResponse<Void> close(@PathVariable UUID id, @CurrentUser UUID userId) {
         reportService.closeReport(id, userId);
-        return ApiResponse.success("ปิดเคสเรียบร้อย", null);
+        return ApiResponse.success("ปิดเคสเรียบร้อยแล้ว", null);
     }
 }

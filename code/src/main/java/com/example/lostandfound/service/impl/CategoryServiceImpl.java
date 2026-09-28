@@ -3,7 +3,7 @@ package com.example.lostandfound.service.impl;
 import com.example.lostandfound.domain.entity.Category;
 import com.example.lostandfound.dto.request.CategoryRequest;
 import com.example.lostandfound.dto.response.CategoryResponse;
-import com.example.lostandfound.exception.BadRequestException;
+import com.example.lostandfound.exception.ConflictException;
 import com.example.lostandfound.exception.ResourceNotFoundException;
 import com.example.lostandfound.mapper.CategoryMapper;
 import com.example.lostandfound.repository.CategoryRepository;
@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponse create(CategoryRequest request) {
         if (categoryRepository.existsByCategoryNameIgnoreCase(request.getCategoryName())) {
-            throw new BadRequestException("มีหมวดหมู่ชื่อ '" + request.getCategoryName() + "' อยู่แล้ว");
+            throw new ConflictException("มีหมวดหมู่ชื่อ '" + request.getCategoryName() + "' อยู่แล้ว");
         }
         Category saved = categoryRepository.save(categoryMapper.toEntity(request));
         return categoryMapper.toResponse(saved);

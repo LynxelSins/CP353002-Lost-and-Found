@@ -10,6 +10,8 @@ import com.example.lostandfound.security.JwtUtil;
 import com.example.lostandfound.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +26,10 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
         User user = authService.register(request);
         String token = jwtUtil.generateToken(user);
-        return ApiResponse.created(AuthResponse.of(token, user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.created(AuthResponse.of(token, user)));
     }
 
     @PostMapping("/login")

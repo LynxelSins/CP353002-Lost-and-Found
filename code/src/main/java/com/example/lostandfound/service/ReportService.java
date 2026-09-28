@@ -19,6 +19,10 @@ public interface ReportService {
     Page<ReportSummaryResponse> search(ReportType type, ReportStatus status, Long categoryId,
                                         String tagName, String keyword, Pageable pageable);
 
+    Page<ReportSummaryResponse> getMyReports(UUID userId, Pageable pageable);
+
+    Page<ReportSummaryResponse> getWatchedReports(UUID userId, Pageable pageable);
+
     void watch(UUID reportId, UUID userId);
 
     void unwatch(UUID reportId, UUID userId);

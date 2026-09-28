@@ -1,5 +1,5 @@
 package com.example.lostandfound.service.impl;
-
+import com.example.lostandfound.exception.ConflictException;
 import com.example.lostandfound.domain.entity.User;
 import com.example.lostandfound.domain.entity.UserProfile;
 import com.example.lostandfound.domain.enums.UserRole;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -26,10 +27,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public User register(RegisterRequest request) {
-        userRepository.findByEmail(request.getEmail()).ifPresent(existing -> {
-            throw new BadRequestException("อีเมลนี้ถูกใช้งานแล้ว");
+                userRepository.findByEmail(request.getEmail()).ifPresent(existing -> {
+            throw new ConflictException("อีเมลนี้ถูกใช้งานแล้ว");
         });
-
         User user = User.builder()
                 .email(request.getEmail())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
