@@ -1,6 +1,16 @@
+import { useEffect, useState } from "react";
+import { getTags } from "../api/tagApi.js";
 import "./FilterBar.css";
 
 function FilterBar({ filters, setFilters }) {
+    const [tags, setTags] = useState([]);
+
+    useEffect(() => {
+        getTags()
+            .then(setTags)
+            .catch(() => setTags([]));
+    }, []);
+
     function updateFilter(key, value) {
         setFilters({ ...filters, [key]: value });
     }
@@ -8,9 +18,8 @@ function FilterBar({ filters, setFilters }) {
     function clearFilters() {
         setFilters({
             type: "ประเภททั้งหมด",
-            location: "สถานที่ทั้งหมด",
             date: "วันที่ล่าสุด",
-            category: "ทั้งหมด",
+            tag: "ทั้งหมด",
         });
     }
 
@@ -24,16 +33,6 @@ function FilterBar({ filters, setFilters }) {
                     <option>ประเภททั้งหมด</option>
                     <option>ของหาย</option>
                     <option>ของที่พบ</option>
-                </select>
-
-                <select
-                    value={filters.location}
-                    onChange={(e) => updateFilter("location", e.target.value)}
-                >
-                    <option>สถานที่ทั้งหมด</option>
-                    <option>อาคารเรียน</option>
-                    <option>โรงอาหาร</option>
-                    <option>ห้องสมุด</option>
                 </select>
 
                 <select
@@ -56,30 +55,35 @@ function FilterBar({ filters, setFilters }) {
             <div className="filter-divider" />
 
             <div className="popular-row">
-                <strong>แท็กยอดนิยม:</strong>
-                {[
-                    "ทั้งหมด",
-                    "โทรศัพท์",
-                    "กุญแจ",
-                    "บัตรประชาชน",
-                    "โน้ตบุ๊ก",
-                    "หูฟัง",
-                    "นาฬิกา",
-                    "กระเป๋า",
-                ].map((tag) => (
+                <strong>แท็กทั้งหมด:</strong>
+                <button
+                    type="button"
+                    className={
+                        filters.tag === "ทั้งหมด"
+                            ? "popular-tag active"
+                            : "popular-tag"
+                    }
+                    onClick={() => updateFilter("tag", "ทั้งหมด")}
+                >
+                    ทั้งหมด
+                </button>
+                {tags.map((tag) => (
                     <button
-                        key={tag}
+                        key={tag.id}
                         type="button"
                         className={
-                            filters.category === tag
+                            filters.tag === tag.tagName
                                 ? "popular-tag active"
                                 : "popular-tag"
                         }
-                        onClick={() => updateFilter("category", tag)}
+                        onClick={() => updateFilter("tag", tag.tagName)}
                     >
-                        {tag}
+                        {tag.tagName}
                     </button>
                 ))}
+                {tags.length === 0 && (
+                    <span className="no-tags">ยังไม่มีแท็ก</span>
+                )}
             </div>
         </section>
     );

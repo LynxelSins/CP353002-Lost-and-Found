@@ -51,7 +51,7 @@
 }
 
 .claim-modal-error {
-    color: #c0392b;
+    color: #d85546;
     font-size: 12px;
     background: #fdecec;
     padding: 8px 10px;
@@ -121,12 +121,30 @@
 
 .claim-item-head {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 8px;
     margin-bottom: 6px;
 }
 
+.claim-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.claim-avatar-empty {
+    display: grid;
+    place-items: center;
+    background: #dceff0;
+    color: #1a9eaa;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .claim-status {
+    margin-left: auto;
     padding: 3px 8px;
     border-radius: 5px;
     font-size: 10px;

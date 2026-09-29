@@ -1,6 +1,5 @@
 import "./StatusBadge.css";
 
-// ต้องตรงกับ enum ReportStatus ฝั่ง backend (OPEN, MATCH_PENDING, CLAIMED, CLOSED)
 const STATUS_INFO = {
     OPEN: { label: "เปิดรับแจ้ง", className: "open" },
     MATCH_PENDING: { label: "รอตรวจสอบผู้เคลม", className: "pending" },
