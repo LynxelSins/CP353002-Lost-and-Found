@@ -13,7 +13,7 @@ function ItemCard({ item, onFavoriteChange }) {
         if (busy) return;
         const next = !favorite;
         setBusy(true);
-        setFavorite(next); // optimistic update ให้ UI ตอบสนองทันที
+        setFavorite(next);
 
         try {
             if (next) {
@@ -33,18 +33,18 @@ function ItemCard({ item, onFavoriteChange }) {
     const isLost = item.type === "lost";
 
     return (
-        <article className="item-card">
-            <div className="item-image">
+        <article className="report-card">
+            <div className="report-card-image">
                 {item.image ? (
                     <img src={item.image} alt={item.title || "สิ่งของ"} />
                 ) : (
-                    <div className="item-image-empty">ไม่มีรูปภาพ</div>
+                    <div className="report-card-image-empty">ไม่มีรูปภาพ</div>
                 )}
             </div>
 
-            <div className="item-card-content">
-                <div className="item-badges">
-                    <span className={isLost ? "item-status lost" : "item-status found"}>
+            <div className="report-card-content">
+                <div className="report-card-badges">
+                    <span className={isLost ? "report-status lost" : "report-status found"}>
                         {isLost ? "ของหาย" : "ของที่พบ"}
                     </span>
                     {item.status && <StatusBadge status={item.status} />}
@@ -52,12 +52,12 @@ function ItemCard({ item, onFavoriteChange }) {
 
                 <h3>{item.title || "ไม่มีชื่อรายการ"}</h3>
 
-                <div className="item-meta">
+                <div className="report-card-meta">
                     <span>◉ &nbsp;{item.location || "ไม่ระบุสถานที่"}</span>
                     <span>◷ &nbsp;{item.date || "ไม่ระบุวันที่"}</span>
                 </div>
 
-                <div className="item-card-bottom">
+                <div className="report-card-bottom">
                     <button
                         className={favorite ? "bookmark-button active" : "bookmark-button"}
                         type="button"

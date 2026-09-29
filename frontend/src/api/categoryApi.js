@@ -11,3 +11,4 @@ export async function getCategoryById(id) {
     const { data } = await client.get(`/api/categories/${id}`);
     return data?.data;
 }
+

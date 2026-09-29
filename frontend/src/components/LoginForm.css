@@ -41,7 +41,7 @@
 .login-header p {
     margin: 0;
 
-    color: #7b8495;
+    color: #9aa2b0;
 
     font-size: 14px;
 }
@@ -293,19 +293,14 @@
 
 .social-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    gap: 12px;
 }
 
 .social-buttons button {
     height: 39px;
-
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    gap: 9px;
 
     border: 1px solid #dfe3e8;
     border-radius: 9px;

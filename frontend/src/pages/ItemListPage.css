@@ -46,51 +46,6 @@
     font-size: 13px;
 }
 
-.user-area {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-}
-
-.notification-button,
-.user-avatar,
-.user-info {
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-}
-
-.notification-button {
-    width: 38px;
-    height: 38px;
-    border: 1px solid #dfe6e8;
-    border-radius: 50%;
-    background: white;
-}
-
-.user-avatar {
-    width: 38px;
-    height: 38px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: #dceff0;
-    font-size: 19px;
-}
-
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    line-height: 1.35;
-    color: #77818e;
-}
-
-.user-info strong {
-    color: #172033;
-    font-size: 12px;
-}
-
 .items-section h2 {
     margin: 20px 0 14px;
     font-size: 20px;

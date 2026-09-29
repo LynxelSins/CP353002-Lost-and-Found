@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./CreateReportModal.css";
 import ImageUploader from "./ImageUploader.jsx";
+import ActionButton from "./ActionButton.jsx";
 import { createReport } from "../api/reportApi.js";
+import { getTags } from "../api/tagApi.js";
 
 function CreateReportModal({ onClose, onCreated }) {
     const [type, setType] = useState("lost");
@@ -10,23 +12,79 @@ function CreateReportModal({ onClose, onCreated }) {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
     const [imageUrls, setImageUrls] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [tagInput, setTagInput] = useState("");
+    const [availableTags, setAvailableTags] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const [done, setDone] = useState(false);
+    const [ratio, setRatio] = useState(0);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        getTags()
+            .then(setAvailableTags)
+            .catch(() => setAvailableTags([]));
+    }, []);
+
+    // createReport ไม่ได้ส่งความคืบหน้ากลับมา เลยไล่ค่าเข้าใกล้ ~90% ระหว่างรอ
+    // แล้วเต็มตอนโพสต์สำเร็จ
+    useEffect(() => {
+        if (!submitting) return;
+
+        setRatio(0);
+
+        const timer = setInterval(() => {
+            setRatio((r) => r + (0.9 - r) * 0.08);
+        }, 120);
+
+        return () => clearInterval(timer);
+    }, [submitting]);
+
+    function addTag(rawTag) {
+        const name = rawTag.trim();
+        if (!name) return;
+        if (tags.some((tag) => tag.toLowerCase() === name.toLowerCase())) {
+            setTagInput("");
+            return;
+        }
+        setTags((prev) => [...prev, name]);
+        setTagInput("");
+    }
+
+    function removeTag(tagToRemove) {
+        setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+    }
+
+    function handleTagKeyDown(event) {
+        if (event.key === "Enter" || event.key === ",") {
+            event.preventDefault();
+            addTag(tagInput);
+        }
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
+        if (submitting || done) return;
         setError("");
         setSubmitting(true);
 
         try {
             await createReport({
-                type: type.toUpperCase(), // lost/found -> LOST/FOUND
+                type: type.toUpperCase(),
                 title,
                 description,
                 locationName: location,
                 eventTimestamp: `${date}T00:00:00`,
                 imageUrls,
+                tagNames: tags,
             });
+
+            // โชว์ "โพสต์แล้ว ✓" ที่ปุ่มสั้นๆ ก่อนปิด
+            setSubmitting(false);
+            setRatio(1);
+            setDone(true);
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
             onCreated ? onCreated() : onClose();
         } catch (err) {
             setError(
@@ -98,6 +156,48 @@ function CreateReportModal({ onClose, onCreated }) {
                         />
                     </label>
 
+                    <label className="tag-field">
+                        แท็ก
+                        <div className="tag-input-wrap">
+                            {tags.map((tag) => (
+                                <span className="selected-tag" key={tag}>
+                                    #{tag}
+                                    <button
+                                        type="button"
+                                        onClick={() => removeTag(tag)}
+                                        aria-label={`ลบแท็ก ${tag}`}
+                                    >
+                                        ×
+                                    </button>
+                                </span>
+                            ))}
+                            <input
+                                type="text"
+                                value={tagInput}
+                                onChange={(e) => setTagInput(e.target.value)}
+                                onKeyDown={handleTagKeyDown}
+                                onBlur={() => addTag(tagInput)}
+                                placeholder={tags.length ? "เพิ่มแท็ก..." : "พิมพ์แท็กแล้วกด Enter"}
+                            />
+                        </div>
+                        {availableTags.length > 0 && (
+                            <div className="available-tags">
+                                <small>แท็กที่มีอยู่:</small>
+                                {availableTags.map((tag) => (
+                                    <button
+                                        type="button"
+                                        className="available-tag"
+                                        key={tag.id}
+                                        onClick={() => addTag(tag.tagName)}
+                                    >
+                                        #{tag.tagName}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                        <small className="tag-help">เพิ่มแท็กใหม่ได้เอง เช่น สีดำ, iPhone, มีเคส</small>
+                    </label>
+
                     <label>
                         รายละเอียดเพิ่มเติม
                         <textarea
@@ -123,13 +223,17 @@ function CreateReportModal({ onClose, onCreated }) {
                         >
                             ยกเลิก
                         </button>
-                        <button
+                        <ActionButton
                             type="submit"
-                            className="report-submit"
-                            disabled={submitting}
-                        >
-                            {submitting ? "กำลังโพสต์..." : "โพสต์รายการ"}
-                        </button>
+                            variant="teal"
+                            phase={done ? "done" : submitting ? "busy" : "idle"}
+                            ratio={ratio}
+                            labels={{
+                                idle: "โพสต์รายการ",
+                                busy: "กำลังโพสต์",
+                                done: "โพสต์แล้ว",
+                            }}
+                        />
                     </div>
                 </form>
             </div>

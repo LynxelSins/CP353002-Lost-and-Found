@@ -201,11 +201,6 @@ function LoginForm({ onRegister, onGoogleLogin }) {
                     <img src="/google.svg" />
                     Continue with Google
                 </button>
-
-                <button type="button">
-                    <ShareIcon />
-                    <span>Facebook</span>
-                </button>
             </div>
 
             <div className="switch-auth">
@@ -216,6 +211,7 @@ function LoginForm({ onRegister, onGoogleLogin }) {
                 </button>
             </div>
         </div>
+        //
     );
 }
 
