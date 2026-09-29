@@ -21,5 +21,7 @@ public class ReportSummaryResponse {
     private String locationName;
     private ReportStatus status;
     private String thumbnailUrl;
+    private long watcherCount;   // เพิ่มใหม่
+    private long claimCount;     // เพิ่มใหม่
     private LocalDateTime createdAt;
 }
