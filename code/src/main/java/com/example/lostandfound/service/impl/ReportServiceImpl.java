@@ -14,7 +14,7 @@ import com.example.lostandfound.dto.response.ReportResponse;
 import com.example.lostandfound.dto.response.ReportSummaryResponse;
 import com.example.lostandfound.exception.BadRequestException;
 import com.example.lostandfound.exception.ResourceNotFoundException;
-import com.example.lostandfound.exception.UnauthorizedException;
+import com.example.lostandfound.exception.ForbiddenException;
 import com.example.lostandfound.mapper.ReportMapper;
 import com.example.lostandfound.repository.CategoryRepository;
 import com.example.lostandfound.repository.ReportImageRepository;
@@ -165,7 +165,7 @@ public class ReportServiceImpl implements ReportService {
         Report report = findEntityById(reportId);
 
         if (report.getUser() == null || !report.getUser().getId().equals(ownerId)) {
-            throw new UnauthorizedException("เฉพาะเจ้าของประกาศเท่านั้นที่ปิดเคสได้");
+            throw new ForbiddenException("เฉพาะเจ้าของประกาศเท่านั้นที่ปิดเคสได้");
         }
         if (report.getStatus() != ReportStatus.CLAIMED) {
             throw new BadRequestException("ปิดเคสได้เฉพาะประกาศที่อยู่ในสถานะ CLAIMED เท่านั้น");
