@@ -12,7 +12,7 @@ import com.example.lostandfound.dto.response.ClaimResponse;
 import com.example.lostandfound.exception.BadRequestException;
 import com.example.lostandfound.exception.ConflictException;
 import com.example.lostandfound.exception.ResourceNotFoundException;
-import com.example.lostandfound.exception.UnauthorizedException;
+import com.example.lostandfound.exception.ForbiddenException;
 import com.example.lostandfound.mapper.ClaimMapper;
 import com.example.lostandfound.repository.ClaimRepository;
 import com.example.lostandfound.repository.ReportRepository;
@@ -166,7 +166,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     private void assertOwner(Report report, UUID userId) {
         if (report.getUser() == null || !report.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("เฉพาะเจ้าของประกาศเท่านั้นที่มีสิทธิ์ทำรายการนี้");
+            throw new ForbiddenException("เฉพาะเจ้าของประกาศเท่านั้นที่มีสิทธิ์ทำรายการนี้");
         }
     }
 
