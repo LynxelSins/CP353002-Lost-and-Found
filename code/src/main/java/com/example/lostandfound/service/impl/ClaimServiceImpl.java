@@ -1,5 +1,6 @@
 package com.example.lostandfound.service.impl;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.example.lostandfound.domain.entity.Claim;
 import com.example.lostandfound.domain.entity.Report;
 import com.example.lostandfound.domain.entity.User;
@@ -24,8 +25,6 @@ import com.example.lostandfound.service.strategy.ClaimEligibilityStrategyResolve
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -96,13 +95,6 @@ public class ClaimServiceImpl implements ClaimService {
                 .toList();
     }
 
-    // ลองเพิ่ม public Page<ClaimResponse> getMyClaims
-    @Override
-    public Page<ClaimResponse> getMyClaims(UUID claimantId, Pageable pageable) {
-        return claimRepository.findByClaimantId(claimantId, pageable)
-            .map(claimMapper::toResponse);
-}
-
     @Override
     @Transactional
     public ClaimResponse approve(UUID claimId, UUID ownerId, ApproveClaimRequest request) {
@@ -167,6 +159,11 @@ public class ClaimServiceImpl implements ClaimService {
         return claimMapper.toResponse(claim);
     }
 
+        @Override
+    public Page<ClaimResponse> getMyClaims(UUID claimantId, Pageable pageable) {
+        return claimRepository.findByClaimantId(claimantId, pageable).map(claimMapper::toResponse);
+    }
+
     private void assertOwner(Report report, UUID userId) {
         if (report.getUser() == null || !report.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("เฉพาะเจ้าของประกาศเท่านั้นที่มีสิทธิ์ทำรายการนี้");
@@ -181,7 +178,5 @@ public class ClaimServiceImpl implements ClaimService {
     private Claim findClaim(UUID id) {
         return claimRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim", "id", id));
-                
     }
-
 }

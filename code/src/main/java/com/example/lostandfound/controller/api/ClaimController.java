@@ -23,7 +23,6 @@ import com.example.lostandfound.dto.response.ClaimResponse;
 import com.example.lostandfound.security.CurrentUser;
 import com.example.lostandfound.service.ClaimService;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
