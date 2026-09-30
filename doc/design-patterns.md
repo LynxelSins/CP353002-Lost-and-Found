@@ -10,11 +10,10 @@
 | DTO Pattern + Mapper | `dto/request/`, `dto/response/`, `mapper/` แยก Entity ออกจาก API Contract |
 | Dependency Injection | Constructor Injection ทุกจุด (`@RequiredArgsConstructor`) |
 
-## GoF Patterns (กลุ่ม Behavioral — เลือก 3 แบบ)
+## GoF Patterns (กลุ่ม Behavioral — 3 แบบ)
+
 | Pattern | ปัญหาที่แก้ | ไฟล์/คลาสที่ใช้ | Diagram อ้างอิง |
 |---|---|---|---|
-| **State** | ควบคุมการเปลี่ยน `Report.status` ให้ถูกต้องตาม workflow ไม่ใช้ if-else สะสม | `ReportStatusChanger.java`, `service/state/ReportState.java` (interface) + `OpenState`/`MatchPendingState`/`ClaimedState`/`ClosedState`/`RejectedState` | `doc/diagrams/class-diagram-with-patterns.md`, `doc/diagrams/State Diagram` |
-| **Observer** | แจ้งเตือนผู้ติดตาม (`report_watchers`) อัตโนมัติเมื่อสถานะ Report เปลี่ยน โดยไม่ couple กับโค้ดแจ้งเตือนตรงๆ | `event/ReportStatusChangedEvent.java`, `event/ReportStatusEventListener.java` (ใช้ Spring `ApplicationEventPublisher`) | `doc/diagrams/class-diagram-with-patterns.md` |
-| **Strategy** | ตรวจสิทธิ์การยื่นเคลม (`ClaimEligibility`) ที่กติกาต่างกันตาม `ReportType` (LOST vs FOUND) โดยไม่ต้อง if-else ใน `ClaimServiceImpl` | `service/strategy/ClaimEligibilityStrategy.java` (interface) + `service/strategy/ClaimEligibilityStrategyResolver.java` | *(ต้องวาด Class Diagram ใหม่ให้ตรง เพราะฉบับเดิมออกแบบเป็น `ReportSearchStrategy` ซึ่งไม่ตรงกับของจริง)* |
-
-> ⚠️ ตอนนี้ `service/state/` และ `service/strategy/` ยังไม่มีไฟล์จริงใน repo (compile error) — ตารางนี้เขียนจากคลาสที่ถูก import/เรียกใช้ในโค้ดที่มีอยู่แล้ว รอเพื่อนเพิ่มไฟล์กลับเข้ามาแล้วตรวจ path ให้ตรง
+| **State** | ควบคุมการเปลี่ยน `Report.status` ให้ถูกต้องตาม workflow (OPEN → MATCH_PENDING → CLAIMED → CLOSED หรือ REJECTED) โดยไม่ใช้ if-else สะสมใน Service | `service/ReportStatusChanger.java`, `service/state/ReportState.java` (interface) + `OpenState`, `MatchPendingState`, `ClaimedState`, `ClosedState`, `RejectedState` | `doc/diagrams/class-diagram-with-patterns.md`, `doc/diagrams/State Diagram` |
+| **Observer** | แจ้งเตือนผู้ติดตาม (`report_watchers`) อัตโนมัติทุกครั้งที่สถานะ `Report` เปลี่ยน โดยไม่ให้ `ReportStatusChanger` ต้อง couple กับ logic แจ้งเตือนตรงๆ | `event/ReportStatusChangedEvent.java`, `event/ReportStatusEventListener.java` (ใช้ Spring `ApplicationEventPublisher` + `@EventListener`), `service/NotificationService.java` | `doc/diagrams/class-diagram-with-patterns.md` |
+| **Strategy** | ตรวจสิทธิ์การยื่นเคลม (Claim Eligibility) ที่กติกาต่างกันตาม `ReportType` (LOST vs FOUND) โดยไม่ต้อง if-else ใน `ClaimServiceImpl` — เพิ่มกติกาใหม่ทำได้แค่เพิ่มคลาส (Open/Closed Principle) | `service/strategy/ClaimEligibilityStrategy.java` (interface), `LostReportClaimEligibilityStrategy.java`, `FoundReportClaimEligibilityStrategy.java`, `ClaimEligibilityStrategyResolver.java` | `doc/diagrams/class-diagram-with-patterns.md` |
