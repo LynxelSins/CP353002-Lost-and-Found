@@ -27,15 +27,23 @@ function ClaimModel({ reportId, onClose, onChanged }) {
 
     const [evidenceText, setEvidenceText] = useState("");
     const [evidenceImageUrl, setEvidenceImageUrl] = useState("");
+    const [uploading, setUploading] = useState(false);
+    const [uploaderKey, setUploaderKey] = useState(0); // เปลี่ยนค่า = ล้างรูป preview ใน ImageUploader
     const [submitting, setSubmitting] = useState(false);
     const [actionError, setActionError] = useState("");
     const [actionBusyId, setActionBusyId] = useState(null);
 
+    // ต้องตรงกับ backend: LostReportClaimEligibilityStrategy บังคับ >= 10 ตัวอักษร (ประกาศ LOST)
+    const minEvidenceLength = report?.type === "LOST" ? 10 : 5;
+
     const { errors, validate, clearError } = useFormValidation({
         evidenceText: (value) =>
-            !value || value.trim().length < 5
-                ? "กรุณากรอกหลักฐานยืนยันความเป็นเจ้าของอย่างน้อย 5 ตัวอักษร"
+            !value || value.trim().length < minEvidenceLength
+                ? `กรุณากรอกหลักฐานยืนยันอย่างน้อย ${minEvidenceLength} ตัวอักษร`
                 : null,
+        // บังคับแนบรูปหลักฐาน (backend เช็คซ้ำด้วย @NotBlank)
+        evidenceImageUrl: (value) =>
+            !value ? "กรุณาแนบรูปหลักฐานอย่างน้อย 1 รูป" : null,
     });
 
     const isOwner = !!(me && report && report.ownerId === me.id);
@@ -95,16 +103,21 @@ function ClaimModel({ reportId, onClose, onChanged }) {
     async function handleSubmitClaim(event) {
         event.preventDefault();
         setActionError("");
-        if (!validate({ evidenceText })) return;
+        if (uploading) {
+            setActionError("รูปหลักฐานกำลังอัปโหลด กรุณารอสักครู่แล้วลองอีกครั้ง");
+            return;
+        }
+        if (!validate({ evidenceText, evidenceImageUrl })) return;
 
         setSubmitting(true);
         try {
             await createClaim(reportId, {
                 evidenceText,
-                evidenceImageUrl: evidenceImageUrl || undefined,
+                evidenceImageUrl,
             });
             setEvidenceText("");
             setEvidenceImageUrl("");
+            setUploaderKey((k) => k + 1); // ล้าง preview รูปเก่า ไม่ให้ค้างทั้งที่ state ว่างแล้ว
             await refreshReport();
             onChanged && onChanged();
         } catch (err) {
@@ -327,15 +340,19 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                     )}
                                 </label>
 
-                                <label>
-                                    รูปหลักฐาน (ไม่บังคับ)
+                                <div className="form-field">
+                                    รูปหลักฐาน * (แนบ 1 รูป)
                                     <ImageUploader
+                                        key={uploaderKey}
                                         max={1}
-                                        onChange={(urls) =>
-                                            setEvidenceImageUrl(urls[0] || "")
-                                        }
+                                        error={errors.evidenceImageUrl}
+                                        onBusyChange={setUploading}
+                                        onChange={(urls) => {
+                                            setEvidenceImageUrl(urls[0] || "");
+                                            if (urls[0]) clearError("evidenceImageUrl");
+                                        }}
                                     />
-                                </label>
+                                </div>
 
                                 {actionError && (
                                     <p className="claim-modal-error">
@@ -343,7 +360,7 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                     </p>
                                 )}
 
-                                <button type="submit" disabled={submitting}>
+                                <button type="submit" disabled={submitting || uploading}>
                                     {submitting
                                         ? "กำลังส่ง..."
                                         : "ส่งคำขอรับของ"}
