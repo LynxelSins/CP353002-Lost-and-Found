@@ -2,7 +2,6 @@ import { useState } from "react";
 import "./ImageUploader.css";
 import { uploadImage } from "../api/uploadApi.js";
 
-/** อัปโหลดรูปได้สูงสุด `max` รูป ส่ง URL ที่อัปโหลดสำเร็จกลับไปให้ parent ผ่าน onChange */
 function ImageUploader({ onChange, max = 5 }) {
     const [previews, setPreviews] = useState([]);
     const [error, setError] = useState("");

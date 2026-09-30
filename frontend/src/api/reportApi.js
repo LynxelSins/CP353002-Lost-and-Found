@@ -25,8 +25,6 @@ export async function unwatchReport(id) {
 
 export async function closeReport(id) {
     await client.post(`/api/reports/${id}/close`);
-
-
 }
 
 export async function getMyReports(params = {}) {

@@ -15,7 +15,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    background: #e74c3c;
+    background: #e65b4b;
     color: white;
     font-size: 10px;
     font-weight: 700;
@@ -84,4 +84,28 @@
     font-size: 11px;
     color: #9aa4ae;
     font-weight: 400;
+}
+
+.notification-button {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    color: #344454;
+}
+
+.notification-button svg {
+    width: 21px;
+    height: 21px;
+}
+
+.notification-button:hover {
+    background: #eef8f8;
+    color: #14a5b1;
 }

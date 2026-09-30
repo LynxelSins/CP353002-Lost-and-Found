@@ -109,15 +109,10 @@
     transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Login
-   Green panel อยู่ฝั่งซ้าย */
 
 .login-mode .auth-brand {
     transform: translateX(0);
 }
-
-/* Register
-   Green panel เลื่อนไปฝั่งขวา */
 
 .register-mode .auth-brand {
     transform: translateX(58vw);
@@ -751,5 +746,166 @@
     .brand-tags span {
         font-size: 9px;
         padding: 6px 9px;
+    }
+}
+
+/* =========================================
+   BACKGROUND & INTERACTION (subtle)
+========================================= */
+
+/* พื้นหลังฝั่งฟอร์ม: ไล่สีอ่อนๆ */
+.auth-page {
+    background:
+        radial-gradient(circle at 85% 12%, #cff5f6 0%, transparent 42%),
+        radial-gradient(circle at 15% 92%, #f4fefe 0%, transparent 45%),
+        #e9fbfb;
+}
+
+/* แผงสีเขียว: gradient + จุดลายบางๆ */
+.auth-brand {
+    background:
+        radial-gradient(circle at 12% 8%, #4fd3db 0%, transparent 48%),
+        radial-gradient(circle at 92% 95%, #178792 0%, transparent 52%),
+        linear-gradient(160deg, #2bb7c1 0%, #1f9ca7 100%);
+}
+
+/* วงแสงลอยช้าๆ */
+.auth-brand::before {
+    content: "";
+    position: absolute;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 22% 26%, rgba(255, 255, 255, 0.17), transparent 28%),
+        radial-gradient(circle at 78% 74%, rgba(255, 255, 255, 0.12), transparent 30%);
+
+    animation: brand-drift 18s ease-in-out infinite alternate;
+}
+
+/* แว่นขยายตามเมาส์ (ส่องหาของหาย) */
+.auth-brand::after {
+    content: "";
+    position: absolute;
+    left: var(--mx, 50%);
+    top: var(--my, 50%);
+    z-index: 0;
+    width: 190px;
+    height: 190px;
+    translate: -50% -50%;
+    pointer-events: none;
+
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 70%);
+    box-shadow: 0 0 28px rgba(255, 255, 255, 0.18);
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.auth-brand:hover::after {
+    opacity: 1;
+}
+
+/* ไอคอนของหาย: ชั้นจาง + ชั้นสว่างที่โผล่เฉพาะในวงแว่นขยาย */
+.brand-items {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    opacity: 0.13;
+}
+
+.brand-items.lit {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    -webkit-mask-image: radial-gradient(circle 95px at var(--mx, 50%) var(--my, 50%), #000 70%, transparent 100%);
+    mask-image: radial-gradient(circle 95px at var(--mx, 50%) var(--my, 50%), #000 70%, transparent 100%);
+}
+
+.auth-brand:hover .brand-items.lit {
+    opacity: 0.85;
+}
+
+.brand-content {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes brand-drift {
+    from {
+        translate: -3% -2%;
+        rotate: 0deg;
+    }
+    to {
+        translate: 3% 3%;
+        rotate: 8deg;
+    }
+}
+
+/* การ์ดลอยเบาๆ + ขยายเล็กน้อยตอน hover */
+.location-card,
+.item-card {
+    transition:
+        scale 0.25s ease,
+        box-shadow 0.25s ease;
+    animation: card-float 6s ease-in-out infinite;
+}
+
+.item-card {
+    animation-duration: 7s;
+    animation-delay: -3s;
+}
+
+.location-card:hover,
+.item-card:hover {
+    scale: 1.05;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+@keyframes card-float {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 -7px;
+    }
+}
+
+/* ข้อความ heading fade เข้าเมื่อสลับโหมด */
+.brand-heading {
+    animation: brand-fade-up 0.6s ease-out 0.3s both;
+}
+
+@keyframes brand-fade-up {
+    from {
+        opacity: 0;
+        translate: 0 10px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-brand::before,
+    .location-card,
+    .item-card,
+    .brand-heading {
+        animation: none;
     }
 }

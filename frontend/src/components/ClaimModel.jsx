@@ -18,12 +18,6 @@ const CLAIM_STATUS_LABEL = {
     REJECTED: "ถูกปฏิเสธ",
 };
 
-/**
- * Modal แสดงรายละเอียดประกาศแบบเต็ม (แทนหน้า Item Detail แยก) +
- * จัดการ Flow การเคลม:
- *  - ไม่ใช่เจ้าของ + สถานะ OPEN/MATCH_PENDING -> ฟอร์มยื่นขอรับของ
- *  - เป็นเจ้าของ -> รายการคำขอทั้งหมด พร้อมปุ่มอนุมัติ/ปฏิเสธ
- */
 function ClaimModel({ reportId, onClose, onChanged }) {
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState("");
@@ -246,6 +240,17 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                 {claims.map((c) => (
                                     <div key={c.id} className="claim-item">
                                         <div className="claim-item-head">
+                                            {c.claimantAvatarUrl ? (
+                                                <img
+                                                    className="claim-avatar"
+                                                    src={c.claimantAvatarUrl}
+                                                    alt=""
+                                                />
+                                            ) : (
+                                                <div className="claim-avatar claim-avatar-empty">
+                                                    {(c.claimantName || "?")[0].toUpperCase()}
+                                                </div>
+                                            )}
                                             <strong>{c.claimantName}</strong>
                                             <span
                                                 className={`claim-status ${c.claimStatus.toLowerCase()}`}
