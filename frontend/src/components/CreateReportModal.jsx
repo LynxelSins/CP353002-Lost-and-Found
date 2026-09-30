@@ -12,6 +12,8 @@ function CreateReportModal({ onClose, onCreated }) {
     const [date, setDate] = useState("");
     const [description, setDescription] = useState("");
     const [imageUrls, setImageUrls] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [imageError, setImageError] = useState("");
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
     const [availableTags, setAvailableTags] = useState([]);
@@ -66,6 +68,17 @@ function CreateReportModal({ onClose, onCreated }) {
         event.preventDefault();
         if (submitting || done) return;
         setError("");
+
+        // บังคับแนบรูปอย่างน้อย 1 รูป (backend เช็คซ้ำด้วย @NotEmpty เผื่อยิง API ตรง)
+        if (uploading) {
+            setError("รูปภาพกำลังอัปโหลด กรุณารอสักครู่แล้วกดโพสต์อีกครั้ง");
+            return;
+        }
+        if (imageUrls.length === 0) {
+            setImageError("กรุณาแนบรูปภาพอย่างน้อย 1 รูป");
+            return;
+        }
+
         setSubmitting(true);
 
         try {
@@ -208,10 +221,18 @@ function CreateReportModal({ onClose, onCreated }) {
                         />
                     </label>
 
-                    <label>
-                        รูปภาพประกอบ (ไม่บังคับ)
-                        <ImageUploader onChange={setImageUrls} />
-                    </label>
+                    <div className="form-field">
+                        รูปภาพประกอบ * (แนบอย่างน้อย 1 รูป)
+                        <ImageUploader
+                            max={5}
+                            error={imageError}
+                            onBusyChange={setUploading}
+                            onChange={(urls) => {
+                                setImageUrls(urls);
+                                if (urls.length > 0) setImageError("");
+                            }}
+                        />
+                    </div>
 
                     {error && <p className="report-form-error">{error}</p>}
 
