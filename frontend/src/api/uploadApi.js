@@ -8,5 +8,5 @@ export async function uploadImage(file) {
         headers: { "Content-Type": "multipart/form-data" },
     });
 
-    return `${client.defaults.baseURL}${data.data.url}`;
+    return data.data.url; // backend คืน URL เต็มของรูปที่เก็บใน Neon (/api/files/{id}) ไม่ต้องต่อ baseURL เอง
 }

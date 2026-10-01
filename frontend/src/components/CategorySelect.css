@@ -1,0 +1,25 @@
+.category-select-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.category-select-wrap select:disabled {
+    background: #f7f9fa;
+    color: #8b949d;
+    cursor: not-allowed;
+}
+
+.category-select-error,
+.category-select-help {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.category-select-error {
+    color: #c0392b;
+}
+
+.category-select-help {
+    color: #8a94a1;
+}

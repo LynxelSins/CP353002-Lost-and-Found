@@ -175,11 +175,6 @@ function RegisterForm({ onLogin, onGoogleLogin }) {
                     <img src="/google.svg" />
                     Sign up with Google
                 </button>
-
-                <button type="button">
-                    <span className="facebook-f">f</span>
-                    Facebook
-                </button>
             </div>
 
             <div className="register-switch">

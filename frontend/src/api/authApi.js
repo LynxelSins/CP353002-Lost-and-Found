@@ -27,6 +27,20 @@ export async function getMe() {
     return data.data;
 }
 
+// แก้ไขโปรไฟล์ (ชื่อ/เบอร์โทร/รูปโปรไฟล์) — ส่งเฉพาะ field ที่ต้องการแก้ก็ได้ (partial update)
+export async function updateProfile(payload) {
+    const { data } = await client.patch("/api/users/me", payload);
+    return data.data;
+}
+
+export async function changePassword(currentPassword, newPassword) {
+    const { data } = await client.patch("/api/users/me/password", {
+        currentPassword,
+        newPassword,
+    });
+    return data;
+}
+
 export function logout() {
     localStorage.removeItem("token");
 }
