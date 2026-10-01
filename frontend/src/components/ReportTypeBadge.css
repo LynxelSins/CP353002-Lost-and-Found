@@ -1,0 +1,20 @@
+.report-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.report-type-badge.lost {
+    background: #fff0f0;
+    color: #d65a5a;
+}
+
+.report-type-badge.found {
+    background: #e8f8f6;
+    color: #1a9e91;
+}

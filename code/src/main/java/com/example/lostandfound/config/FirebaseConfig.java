@@ -22,6 +22,7 @@ public class FirebaseConfig {
     @Value("${firebase.service-account-path}")
     private String serviceAccountPath;
 
+
     @PostConstruct
     public void init() throws IOException {
         if (!FirebaseApp.getApps().isEmpty()) {
@@ -31,9 +32,8 @@ public class FirebaseConfig {
         Resource resource = new PathMatchingResourcePatternResolver()
                 .getResource("classpath:" + serviceAccountPath);
 
-        // ตรวจสอบว่ามีไฟล์คีย์ Firebase หรือไม่ เพื่อไม่ให้ระบบล่มในกรณีที่ยังไม่ได้ใส่ไฟล์คีย์ตอนรันพัฒนา (Dev Mode)
         if (!resource.exists()) {
-            log.warn("ไม่พบไฟล์ Firebase Service Account ที่ [classpath:{}] - การตรวจสอบสิทธิ์ผ่าน Firebase จะถูกปิดการทำงานไว้ชั่วคราว", serviceAccountPath);
+            log.warn("ไม่พบไฟล์ Firebase Service Account ที่ [classpath:{}] - Firebase จะถูกปิดการทำงานไว้ชั่วคราว", serviceAccountPath);
             return;
         }
 

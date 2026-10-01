@@ -1,3 +1,4 @@
+// code/src/main/java/com/example/lostandfound/repository/ReportRepository.java
 package com.example.lostandfound.repository;
 
 import com.example.lostandfound.domain.entity.Report;
@@ -19,8 +20,8 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
             WHERE (:type IS NULL OR r.type = :type)
               AND (:status IS NULL OR r.status = :status)
               AND (:categoryId IS NULL OR r.category.id = :categoryId)
-              AND (:tagName IS NULL OR LOWER(t.tagName) = LOWER(:tagName))
-              AND (:keyword IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
+              AND (:tagName IS NULL OR LOWER(t.tagName) = LOWER(CAST(:tagName AS string)))
+              AND (:keyword IS NULL OR LOWER(r.title) LIKE LOWER(CONCAT('%', CAST(:keyword AS string), '%')))
             """)
     Page<Report> search(@Param("type") ReportType type,
                          @Param("status") ReportStatus status,
@@ -28,4 +29,15 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
                          @Param("tagName") String tagName,
                          @Param("keyword") String keyword,
                          Pageable pageable);
+
+    // ==== ประกาศที่ user คนนี้เป็นคนโพสต์ ====
+    Page<Report> findByUserId(UUID userId, Pageable pageable);
+
+    // ==== ประกาศที่ user คนนี้กด "ติดตาม" ไว้ ====
+    @Query("""
+            SELECT r FROM Report r
+            JOIN r.watchers w
+            WHERE w.user.id = :userId
+            """)
+    Page<Report> findWatchedByUserId(@Param("userId") UUID userId, Pageable pageable);
 }
