@@ -7,6 +7,13 @@ import NotificationBell from "./NotificationBell.jsx";
 import { ChevronDown } from "reicon-react";
 import "./UserHeaderBar.css";
 
+// ดึงตัวอักษรแรกของชื่อ (ข้ามสระนำภาษาไทย เ แ โ ใ ไ เพื่อให้ได้พยัญชนะตัวแรก)
+function getInitial(name) {
+    const chars = Array.from((name || "").trim());
+    const first = chars.find((c) => !"เแโใไ".includes(c)) || chars[0];
+    return first ? first.toUpperCase() : "?";
+}
+
 function UserHeaderBar({ userName = "ผู้ใช้งาน", avatarUrl = "" }) {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -62,7 +69,11 @@ function UserHeaderBar({ userName = "ผู้ใช้งาน", avatarUrl = "
                     aria-expanded={open}
                 >
                     <span className="user-header-avatar">
-                        {avatarUrl ? <img src={avatarUrl} alt="" /> : "👤"}
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="" />
+                        ) : (
+                            getInitial(userName)
+                        )}
                     </span>
                     <span className="user-header-info">
                         <span>สวัสดี</span>
