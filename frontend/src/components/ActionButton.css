@@ -1,0 +1,203 @@
+/* =========================================
+   ACTION BUTTON  (idle -> busy -> done)
+========================================= */
+
+.action-btn {
+    --ab-main: #27aeb8;
+    --ab-side: #1f96a0;
+    --ab-fill: #e9fbfb;
+    --ab-done-bg: #e9fbfb;
+    --ab-done-fg: #1f96a0;
+
+    display: inline-flex;
+    align-items: stretch;
+
+    height: 42px;
+    padding: 0;
+
+    overflow: hidden;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--ab-main);
+    color: #ffffff;
+
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.action-btn--dark {
+    --ab-main: #171d29;
+    --ab-side: #101621;
+    --ab-fill: #f1f4ff;
+    --ab-done-bg: #f4f6ff;
+    --ab-done-fg: #171d29;
+}
+
+.action-btn--block {
+    display: flex;
+    width: 100%;
+    height: 46px;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(20, 30, 50, 0.18);
+}
+
+.action-btn:disabled {
+    cursor: progress;
+}
+
+.action-btn.is-done:disabled {
+    cursor: default;
+}
+
+/* ข้อความ */
+
+.action-btn-label {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 20px;
+
+    white-space: nowrap;
+
+    animation: action-btn-label-in 0.25s ease;
+}
+
+@keyframes action-btn-label-in {
+    from {
+        opacity: 0;
+        translate: 0 6px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+/* ช่องไอคอนด้านขวา */
+
+.action-btn-side {
+    position: relative;
+
+    width: 44px;
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+
+    background: var(--ab-side);
+
+    transition:
+        background 0.3s ease,
+        color 0.3s ease;
+}
+
+.ab-glyph {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.ab-check {
+    opacity: 0;
+    transform: scale(0.6);
+}
+
+/* ส่วนที่ "เติมขึ้น" ตามความคืบหน้า (ขอบบนโค้งนิดๆ) */
+
+.ab-fill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 0;
+
+    border-radius: 50% 50% 0 0 / 8px 8px 0 0;
+
+    background: var(--ab-fill);
+
+    opacity: 0;
+
+    transition:
+        height 0.15s linear,
+        opacity 0.2s ease;
+}
+
+/* --- busy --- */
+
+.is-busy .ab-arrow {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.is-busy .ab-fill {
+    opacity: 1;
+}
+
+/* --- done --- */
+
+.is-done .ab-arrow {
+    opacity: 0;
+}
+
+.is-done .ab-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.is-done .action-btn-side {
+    background: var(--ab-done-bg);
+    color: var(--ab-done-fg);
+}
+
+.is-done .ab-fill {
+    opacity: 0;
+}
+
+/* เครื่องหมายถูกค่อยๆ ถูกวาด */
+
+.ab-check path {
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1.02;
+
+    transition: stroke-dashoffset 0.4s ease 0.1s;
+}
+
+.is-done .ab-check path {
+    stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .action-btn,
+    .action-btn-label,
+    .action-btn-side,
+    .ab-glyph,
+    .ab-fill,
+    .ab-check path {
+        transition: none;
+        animation: none;
+    }
+}

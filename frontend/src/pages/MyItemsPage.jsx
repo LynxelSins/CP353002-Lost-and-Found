@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar.jsx";
+import UserHeaderBar from "../components/UserHeaderBar.jsx";
 import StatusBadge from "../components/StatusBadge.jsx";
 import ClaimModel from "../components/ClaimModel.jsx";
 import CreateReportModal from "../components/CreateReportModal.jsx";
@@ -26,13 +27,50 @@ function MyItemsPage() {
     const [openReportId, setOpenReportId] = useState(null);
 
     const [userName, setUserName] = useState("ผู้ใช้งาน");
+    const [avatarUrl, setAvatarUrl] = useState("");
     const [reports, setReports] = useState([]);
     const [claims, setClaims] = useState([]);
     const [watched, setWatched] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    const loadData = useCallback(async () => {
+    // FIX: Use direct async function in useEffect instead of useCallback to prevent circular dependencies
+    useEffect(() => {
+        const loadTabData = async () => {
+            setLoading(true);
+            setError("");
+            try {
+                if (activeTab === "posted") {
+                    const result = await getMyReports({ size: 50 });
+                    setReports(result.content || []);
+                } else if (activeTab === "claims") {
+                    const result = await getMyClaims({ size: 50 });
+                    setClaims(result.content || []);
+                } else {
+                    const result = await getWatchedReports({ size: 50 });
+                    setWatched(result.content || []);
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || "โหลดข้อมูลไม่สำเร็จ");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadTabData();
+    }, [activeTab]); // Only depends on activeTab
+
+    useEffect(() => {
+        getMe()
+            .then((user) => {
+                setUserName(user.fullName || user.email);
+                setAvatarUrl(user.avatarUrl || "");
+            })
+            .catch(() => {});
+    }, []);
+
+    // Separate function for manual refresh (used when creating new report)
+    const refreshCurrentTab = async () => {
         setLoading(true);
         setError("");
         try {
@@ -51,17 +89,7 @@ function MyItemsPage() {
         } finally {
             setLoading(false);
         }
-    }, [activeTab]);
-
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
-
-    useEffect(() => {
-        getMe()
-            .then((user) => setUserName(user.fullName || user.email))
-            .catch(() => {});
-    }, []);
+    };
 
     function renderReportsTable(rows, emptyText) {
         if (rows.length === 0) {
@@ -89,7 +117,10 @@ function MyItemsPage() {
                             <td className="my-items-row-main">
                                 <div className="my-items-thumb">
                                     {r.thumbnailUrl ? (
-                                        <img src={r.thumbnailUrl} alt={r.title} />
+                                        <img
+                                            src={r.thumbnailUrl}
+                                            alt={r.title}
+                                        />
                                     ) : (
                                         <div className="my-items-thumb-empty" />
                                     )}
@@ -98,7 +129,11 @@ function MyItemsPage() {
                                     <strong>{r.title}</strong>
                                     <div className="my-items-row-meta">
                                         {r.locationName} ·{" "}
-                                        {r.createdAt ? r.createdAt.slice(0, 16).replace("T", " ") : ""}
+                                        {r.createdAt
+                                            ? r.createdAt
+                                                  .slice(0, 16)
+                                                  .replace("T", " ")
+                                            : ""}
                                     </div>
                                 </div>
                             </td>
@@ -120,7 +155,9 @@ function MyItemsPage() {
                 <div className="my-items-empty">
                     <div>♡</div>
                     <h2>ยังไม่มีคำร้อง</h2>
-                    <p>ยื่นขอรับของจากประกาศที่คุณสนใจ แล้วรายการจะมาแสดงตรงนี้</p>
+                    <p>
+                        ยื่นขอรับของจากประกาศที่คุณสนใจ แล้วรายการจะมาแสดงตรงนี้
+                    </p>
                 </div>
             );
         }
@@ -136,29 +173,42 @@ function MyItemsPage() {
                 </thead>
                 <tbody>
                     {claims.map((c) => (
-                        <tr key={c.id} onClick={() => setOpenReportId(c.reportId)}>
+                        <tr
+                            key={c.id}
+                            onClick={() => setOpenReportId(c.reportId)}
+                        >
                             <td className="my-items-row-main">
                                 <div className="my-items-thumb">
                                     {c.reportThumbnailUrl ? (
-                                        <img src={c.reportThumbnailUrl} alt={c.reportTitle} />
+                                        <img
+                                            src={c.reportThumbnailUrl}
+                                            alt={c.reportTitle}
+                                        />
                                     ) : (
                                         <div className="my-items-thumb-empty" />
                                     )}
                                 </div>
                                 <div>
                                     <strong>{c.reportTitle}</strong>
-                                    <div className="my-items-row-meta">{c.reportLocationName}</div>
+                                    <div className="my-items-row-meta">
+                                        {c.reportLocationName}
+                                    </div>
                                 </div>
                             </td>
                             <td>
                                 <StatusBadge status={c.reportStatus} />
                             </td>
                             <td>
-                                <span className={`claim-status ${c.claimStatus.toLowerCase()}`}>
-                                    {CLAIM_STATUS_LABEL[c.claimStatus] || c.claimStatus}
+                                <span
+                                    className={`claim-status ${c.claimStatus.toLowerCase()}`}
+                                >
+                                    {CLAIM_STATUS_LABEL[c.claimStatus] ||
+                                        c.claimStatus}
                                 </span>
                             </td>
-                            <td>{c.createdAt ? c.createdAt.slice(0, 10) : ""}</td>
+                            <td>
+                                {c.createdAt ? c.createdAt.slice(0, 10) : ""}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -173,13 +223,14 @@ function MyItemsPage() {
             <main className="my-items-main">
                 <header className="my-items-header">
                     <h1>รายการของฉัน (My Items)</h1>
-                    <div className="my-items-user">
-                        <span>👤</span>
-                        <strong>{userName}</strong>
-                    </div>
+                    <UserHeaderBar userName={userName} avatarUrl={avatarUrl} />
                 </header>
 
-                <nav className="my-items-tabs">
+                <nav
+                    className="my-items-tabs"
+                    style={{ "--active-tab-index": TABS.findIndex((tab) => tab.key === activeTab) }}
+                >
+                    <span className="my-items-tab-indicator" aria-hidden="true" />
                     {TABS.map((tab) => (
                         <button
                             key={tab.key}
@@ -196,11 +247,11 @@ function MyItemsPage() {
                 {error && <p className="my-items-error">{error}</p>}
 
                 {!loading && !error && (
-                    <>
+                    <div key={activeTab} className="my-items-content-slide">
                         {activeTab === "posted" &&
                             renderReportsTable(
                                 reports,
-                                "ยังไม่มีประกาศที่คุณโพสต์ กดปุ่ม “แจ้งของหาย/พบ” เพื่อเริ่มโพสต์แรก",
+                                "ยังไม่มีประกาศที่คุณโพสต์ กดปุ่ม 'แจ้งของหาย/พบ' เพื่อเริ่มโพสต์แรก",
                             )}
                         {activeTab === "claims" && renderClaimsTable()}
                         {activeTab === "watched" &&
@@ -208,7 +259,7 @@ function MyItemsPage() {
                                 watched,
                                 "กดหัวใจที่รายการที่สนใจในหน้าแรก แล้วรายการจะมาแสดงตรงนี้",
                             )}
-                    </>
+                    </div>
                 )}
             </main>
 
@@ -218,7 +269,7 @@ function MyItemsPage() {
                     onCreated={() => {
                         setShowReport(false);
                         setActiveTab("posted");
-                        loadData();
+                        refreshCurrentTab();
                     }}
                 />
             )}
@@ -227,7 +278,7 @@ function MyItemsPage() {
                 <ClaimModel
                     reportId={openReportId}
                     onClose={() => setOpenReportId(null)}
-                    onChanged={loadData}
+                    onChanged={refreshCurrentTab}
                 />
             )}
         </div>

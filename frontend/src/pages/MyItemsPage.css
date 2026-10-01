@@ -1,12 +1,13 @@
 .my-items-page {
-    display: flex;
     min-height: 100vh;
     background: #eaf7f6;
 }
 
 .my-items-main {
-    flex: 1;
+    min-height: 100vh;
+    margin-left: 250px;
     padding: 32px 40px;
+    box-sizing: border-box;
 }
 
 .my-items-header {
@@ -165,4 +166,72 @@
 .claim-status.rejected {
     background: #fdeceb;
     color: #c0392b;
+}
+
+@media (max-width: 800px) {
+    .my-items-main {
+        margin-left: 210px;
+        padding: 20px;
+    }
+}
+
+.my-items-tabs {
+    position: relative;
+    overflow: hidden;
+}
+
+.my-items-tabs button {
+    position: relative;
+    z-index: 1;
+    min-width: 150px;
+    transition: color 0.2s ease;
+}
+
+.my-items-tabs button.active {
+    background: transparent;
+    color: white;
+}
+
+.my-items-tab-indicator {
+    position: absolute;
+    z-index: 0;
+    top: 6px;
+    bottom: 6px;
+    left: 6px;
+    width: calc((100% - 12px) / 3);
+    border-radius: 8px;
+    background: #1ba6b1;
+    transform: translateX(calc(var(--active-tab-index) * 100%));
+    transition: transform 0.28s cubic-bezier(0.22, 0.8, 0.28, 1);
+}
+
+.my-items-content-slide {
+    animation: my-items-slide-in 0.28s ease both;
+}
+
+@keyframes my-items-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 800px) {
+    .my-items-tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .my-items-tabs button {
+        min-width: 145px;
+    }
+
+    .my-items-tab-indicator {
+        width: 145px;
+        flex-shrink: 0;
+    }
 }

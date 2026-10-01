@@ -1,6 +1,6 @@
 .filter-bar {
     padding: 17px 18px 15px;
-    border: 2px solid #22aeb9;
+    border: 2px solid #2dc3ce;
     border-radius: 11px;
     background: white;
     box-sizing: border-box;
@@ -91,4 +91,8 @@
         flex: 1;
         min-width: 120px;
     }
+}
+.no-tags {
+    color: #8a949d;
+    font-size: 10px;
 }

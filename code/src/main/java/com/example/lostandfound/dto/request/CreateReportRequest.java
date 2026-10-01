@@ -2,6 +2,7 @@ package com.example.lostandfound.dto.request;
 
 import com.example.lostandfound.domain.enums.ReportType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -30,7 +31,9 @@ public class CreateReportRequest {
     @NotNull(message = "ต้องระบุวันเวลาที่เกิดเหตุ")
     private LocalDateTime eventTimestamp;
 
-    /** URL รูปที่อัปโหลดไว้แล้ว (การอัปโหลดไฟล์จริงแยกทำที่ storage service/endpoint อื่น) */
+    /** URL รูปที่อัปโหลดไว้แล้วผ่าน POST /api/uploads — บังคับแนบอย่างน้อย 1 รูป (สูงสุด 5 รูป ตรงกับ frontend) */
+    @NotEmpty(message = "ต้องแนบรูปภาพอย่างน้อย 1 รูป")
+    @Size(max = 5, message = "แนบรูปได้สูงสุด 5 รูป")
     private List<@NotBlank String> imageUrls;
 
     /** ไม่บังคับ (Optional Field) — ตามที่เอกสาร Flow ระบุไว้ในขั้นที่ 2 */
