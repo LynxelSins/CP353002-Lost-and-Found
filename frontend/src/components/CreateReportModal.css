@@ -54,7 +54,8 @@
     gap: 14px;
 }
 
-.report-form label {
+.report-form label,
+.report-form .form-field {
     display: flex;
     flex-direction: column;
     gap: 6px;

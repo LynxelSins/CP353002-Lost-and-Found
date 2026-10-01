@@ -206,7 +206,8 @@
     gap: 12px;
 }
 
-.claim-submit-form label {
+.claim-submit-form label,
+.claim-submit-form .form-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
