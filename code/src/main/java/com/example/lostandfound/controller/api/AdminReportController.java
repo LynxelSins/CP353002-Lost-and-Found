@@ -13,7 +13,7 @@ import java.util.UUID;
  * จำกัดสิทธิ์เฉพาะ role STAFF เท่านั้น
  */
 @RestController
-@RequestMapping("/api/admin/reports")
+@RequestMapping("/api/v1/admin/reports")
 @RequiredArgsConstructor
 @PreAuthorize("hasRole('STAFF')")
 public class AdminReportController {

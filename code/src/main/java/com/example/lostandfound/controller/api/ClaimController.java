@@ -32,7 +32,7 @@ public class ClaimController {
 
     private final ClaimService claimService;
 
-    @PostMapping("/api/reports/{reportId}/claims")
+    @PostMapping("/api/v1/reports/{reportId}/claims")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<ClaimResponse> submit(@PathVariable UUID reportId,
             @CurrentUser UUID userId,
@@ -40,25 +40,25 @@ public class ClaimController {
         return ApiResponse.created(claimService.submit(reportId, userId, request));
     }
 
-    @GetMapping("/api/reports/{reportId}/claims")
+    @GetMapping("/api/v1/reports/{reportId}/claims")
     public ApiResponse<List<ClaimResponse>> listForReport(@PathVariable UUID reportId,
             @CurrentUser UUID userId) {
         return ApiResponse.success(claimService.getByReport(reportId, userId));
     }
 
-    @PatchMapping("/api/claims/{claimId}/approve")
+    @PatchMapping("/api/v1/claims/{claimId}/approve")
     public ApiResponse<ClaimResponse> approve(@PathVariable UUID claimId,
             @CurrentUser UUID userId,
             @RequestBody(required = false) ApproveClaimRequest request) {
         return ApiResponse.success(claimService.approve(claimId, userId, request));
     }
 
-    @PatchMapping("/api/claims/{claimId}/reject")
+    @PatchMapping("/api/v1/claims/{claimId}/reject")
     public ApiResponse<ClaimResponse> reject(@PathVariable UUID claimId, @CurrentUser UUID userId) {
         return ApiResponse.success(claimService.reject(claimId, userId));
     }
 
-    @GetMapping("/api/claims/mine")
+    @GetMapping("/api/v1/claims/mine")
     public ApiResponse<Page<ClaimResponse>> mine(
             @CurrentUser UUID userId,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {

@@ -21,7 +21,7 @@ import java.util.UUID;
  * — ก่อนหน้านี้ Service เขียนไว้แล้วแต่ไม่มี Controller เรียกใช้ (dead code)
  */
 @RestController
-@RequestMapping("/api/users/me")
+@RequestMapping("/api/v1/users/me")
 @RequiredArgsConstructor
 
 public class UserController {
