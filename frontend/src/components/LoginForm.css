@@ -259,6 +259,11 @@
     transform: translateY(1px);
 }
 
+.input-wrapper input::-ms-reveal,
+.input-wrapper input::-ms-clear {
+    display: none;
+}
+
 /* =========================================
    DIVIDER
 ========================================= */
@@ -379,3 +384,4 @@
         grid-template-columns: 1fr;
     }
 }
+
