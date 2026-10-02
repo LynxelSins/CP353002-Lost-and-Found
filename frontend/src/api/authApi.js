@@ -33,6 +33,14 @@ export async function updateProfile(payload) {
     return data.data;
 }
 
+export async function changePassword(currentPassword, newPassword) {
+    const { data } = await client.patch("/api/users/me/password", {
+        currentPassword,
+        newPassword,
+    });
+    return data;
+}
+
 export function logout() {
     localStorage.removeItem("token");
 }

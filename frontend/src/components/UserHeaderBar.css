@@ -41,7 +41,9 @@
     flex-shrink: 0;
     border-radius: 50%;
     background: #dceff0;
-    font-size: 19px;
+    color: #14a5b1;
+    font-size: 16px;
+    font-weight: 700;
     overflow: hidden;
 }
 
