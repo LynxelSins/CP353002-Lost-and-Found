@@ -10,11 +10,6 @@ import java.util.UUID;
 
 /**
  * คำขอเคลม (ระบบเคลมเต็มรูปแบบ: ส่งหลักฐาน -&gt; แอดมินอนุมัติ/ปฏิเสธ -&gt; นัดรับ)
- * <p>
- * การกันยื่น PENDING ซ้ำซ้อนในโพสต์เดียวกันโดยคนเดิม ทำผ่าน Partial Unique Index
- * ({@code idx_unique_pending_claim}) ที่ระดับ schema.sql เนื่องจาก JPA/Hibernate
- * annotation ไม่รองรับ unique constraint แบบมีเงื่อนไข (WHERE clause)
- * — ฝั่ง Service Layer ({@code ClaimService}) ต้องตรวจสอบซ้ำอีกชั้นก่อนบันทึกด้วย (SRP)
  */
 @Getter
 @Setter

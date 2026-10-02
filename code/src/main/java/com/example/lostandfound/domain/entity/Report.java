@@ -15,10 +15,6 @@ import java.util.UUID;
 
 /**
  * ประกาศแจ้งของหาย/พบของ — Entity หลักของระบบ
- * <p>
- * สถานะ (status) เปลี่ยนผ่าน Service Layer ด้วย State Pattern และทุกครั้งที่เปลี่ยน
- * จะถูกบันทึกลง {@link ReportStatusLog} พร้อม publish event แจ้งเตือนไปยัง
- * {@link ReportWatcher} ทุกคน (Observer Pattern)
  */
 @Getter
 @Setter

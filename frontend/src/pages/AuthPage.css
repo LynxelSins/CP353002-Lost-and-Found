@@ -1,0 +1,911 @@
+/* =========================================
+   AUTH PAGE
+========================================= */
+
+.auth-page {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+
+    overflow: hidden;
+
+    margin: 0;
+    padding: 0;
+
+    background: #e9fbfb;
+
+    font-family: Inter, "Noto Sans Thai", "Segoe UI", Arial, sans-serif;
+
+    box-sizing: border-box;
+}
+
+.auth-page *,
+.auth-page *::before,
+.auth-page *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================
+   FORM SIDES
+========================================= */
+
+.auth-form-side {
+    position: absolute;
+
+    top: 0;
+
+    width: 58vw;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    z-index: 2;
+
+    transition:
+        transform 0.75s cubic-bezier(0.77, 0, 0.175, 1),
+        opacity 0.4s ease;
+}
+
+/* Login อยู่ทางขวา */
+
+.login-side {
+    right: 0;
+
+    transform: translateX(0);
+}
+
+/* Register เริ่มอยู่นอกจอทางซ้าย */
+
+.register-side {
+    left: 0;
+
+    transform: translateX(-100%);
+}
+
+/* =========================================
+   REGISTER MODE
+========================================= */
+
+.register-mode .login-side {
+    transform: translateX(100%);
+}
+
+.register-mode .register-side {
+    transform: translateX(0);
+}
+
+
+/* =========================================
+   GREEN COVER PANEL
+========================================= */
+
+.auth-brand {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 42%;
+    height: 100%;
+
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #27aeb8;
+    color: #ffffff;
+
+    transition: transform 0.75s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+
+.login-mode .auth-brand {
+    transform: translateX(0);
+}
+
+.register-mode .auth-brand {
+    transform: translateX(58vw);
+}
+
+/* =========================================
+   BRAND CONTENT
+========================================= */
+
+.brand-content {
+    width: 100%;
+    max-width: 500px;
+
+    min-height: 100%;
+
+    padding: 45px 35px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    box-sizing: border-box;
+}
+
+/* =========================================
+   LOGO
+========================================= */
+
+.brand-logo {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 38px;
+
+    text-align: left;
+}
+
+.brand-logo-icon {
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 14px;
+
+    color: #ffffff;
+}
+
+.brand-logo h1 {
+    margin: 0;
+
+    font-size: 23px;
+    font-weight: 700;
+
+    line-height: 1.2;
+}
+
+.brand-logo p {
+    margin: 4px 0 0;
+
+    font-size: 11px;
+
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* =========================================
+   BRAND HEADING
+========================================= */
+
+.brand-heading {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.brand-heading h2 {
+    margin: 0 0 10px;
+
+    font-size: 27px;
+    font-weight: 700;
+
+    line-height: 1.35;
+}
+
+.brand-heading p {
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.65;
+
+    color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================================
+   ILLUSTRATION
+========================================= */
+
+.lost-found-illustration {
+    position: relative;
+
+    width: 100%;
+    max-width: 390px;
+
+    height: 220px;
+
+    margin-top: 5px;
+}
+
+/* =========================================
+   LOCATION CARD
+========================================= */
+
+.location-card {
+    position: absolute;
+
+    top: 10px;
+    left: 0;
+
+    width: 205px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 11px 14px;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+    color: #253044;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+    text-align: left;
+
+    transform: rotate(-3deg);
+
+    z-index: 3;
+}
+
+.location-card svg {
+    flex-shrink: 0;
+    color: #27aeb8;
+}
+
+.location-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.location-card strong {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.location-card span {
+    font-size: 9px;
+    color: #7c8799;
+}
+
+/* =========================================
+   PERSON
+========================================= */
+
+.person-circle {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 95px;
+    height: 95px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.16);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+
+    color: #ffffff;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 2;
+}
+
+.person-circle svg {
+    width: 42px;
+    height: 42px;
+
+    opacity: 0.95;
+}
+
+/* =========================================
+   SEARCH LINES
+========================================= */
+
+.search-lines {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 165px;
+    height: 90px;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 1;
+}
+
+.search-lines span {
+    position: absolute;
+
+    display: block;
+
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.search-lines span:first-child {
+    width: 70px;
+
+    top: 18px;
+    left: 0;
+
+    transform: rotate(-25deg);
+}
+
+.search-lines span:last-child {
+    width: 70px;
+
+    right: 0;
+    bottom: 18px;
+
+    transform: rotate(-25deg);
+}
+
+/* =========================================
+   ITEM CARD
+========================================= */
+
+.item-card {
+    position: absolute;
+
+    right: 0;
+    bottom: 10px;
+
+    width: 205px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 11px 14px;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+    color: #253044;
+
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
+    text-align: left;
+
+    transform: rotate(3deg);
+
+    z-index: 3;
+}
+
+.item-card svg {
+    flex-shrink: 0;
+    color: #27aeb8;
+}
+
+.item-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.item-card strong {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.item-card span {
+    font-size: 9px;
+    color: #7c8799;
+}
+
+/* =========================================
+   PERSON
+========================================= */
+
+.person-circle {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 120px;
+    height: 120px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+
+    color: #ffffff;
+
+    transform: translate(-50%, -50%);
+}
+
+.person-circle svg {
+    opacity: 0.95;
+}
+
+/* =========================================
+   SEARCH LINES
+========================================= */
+
+.search-lines {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 190px;
+    height: 100px;
+
+    transform: translate(-50%, -50%);
+}
+
+.search-lines span {
+    position: absolute;
+
+    display: block;
+
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.search-lines span:first-child {
+    width: 80px;
+
+    top: 20px;
+    left: 0;
+
+    transform: rotate(-25deg);
+}
+
+.search-lines span:last-child {
+    width: 80px;
+
+    right: 0;
+    bottom: 20px;
+
+    transform: rotate(-25deg);
+}
+
+/* =========================================
+   ITEM CARD
+========================================= */
+
+.item-card {
+    position: absolute;
+
+    right: 0;
+    bottom: 15px;
+
+    min-width: 210px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px 16px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.95);
+    color: #253044;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+    text-align: left;
+
+    transform: rotate(3deg);
+}
+
+.item-card svg {
+    flex-shrink: 0;
+
+    color: #27aeb8;
+}
+
+.item-card div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+.item-card strong {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.item-card span {
+    font-size: 10px;
+    color: #7c8799;
+}
+
+/* =========================================
+   BRAND TAGS
+========================================= */
+
+.brand-tags {
+    width: 100%;
+
+    margin-top: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.brand-tags span {
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
+    font-size: 9px;
+
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* =========================================
+   SMOOTH CONTENT TRANSITION
+========================================= */
+
+.login-mode .brand-content,
+.register-mode .brand-content {
+    transition:
+        opacity 0.35s ease,
+        transform 0.75s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* ตอนเลื่อนไปฝั่ง Register
+   ขยับ content เล็กน้อยให้รู้สึกเหมือน panel เคลื่อน */
+
+.register-mode .brand-content {
+    transform: translateX(0);
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-brand,
+    .auth-form-side,
+    .login-mode .brand-content,
+    .register-mode .brand-content {
+        transition: none;
+    }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+    .brand-content {
+        padding: 55px 35px;
+    }
+
+    .brand-heading h2 {
+        font-size: 28px;
+    }
+
+    .lost-found-illustration {
+        transform: scale(0.9);
+    }
+}
+
+@media (max-width: 850px) {
+    .auth-page {
+        min-height: 100vh;
+
+        overflow-y: auto;
+    }
+
+    .auth-brand {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+
+        min-height: 330px;
+
+        transform: none !important;
+    }
+
+    .auth-form-side {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+
+        min-height: calc(100vh - 330px);
+
+        padding: 35px 20px;
+
+        transform: none !important;
+    }
+
+    .login-side,
+    .register-side {
+        display: none;
+    }
+
+    .login-mode .login-side,
+    .register-mode .register-side {
+        display: flex;
+    }
+
+    .brand-content {
+        min-height: 330px;
+
+        padding: 40px 25px;
+    }
+
+    .brand-logo {
+        margin-bottom: 25px;
+    }
+
+    .brand-heading {
+        margin-bottom: 15px;
+    }
+
+    .brand-heading h2 {
+        font-size: 25px;
+    }
+
+    .lost-found-illustration {
+        display: none;
+    }
+
+    .brand-tags {
+        margin-top: 15px;
+    }
+}
+
+@media (max-width: 500px) {
+    .auth-form-side {
+        padding: 25px 15px;
+    }
+
+    .brand-content {
+        padding: 30px 18px;
+    }
+
+    .brand-logo {
+        gap: 10px;
+    }
+
+    .brand-logo-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .brand-logo h1 {
+        font-size: 21px;
+    }
+
+    .brand-logo p {
+        font-size: 11px;
+    }
+
+    .brand-heading h2 {
+        font-size: 22px;
+    }
+
+    .brand-heading p {
+        font-size: 13px;
+    }
+
+    .brand-tags {
+        gap: 6px;
+    }
+
+    .brand-tags span {
+        font-size: 9px;
+        padding: 6px 9px;
+    }
+}
+
+/* =========================================
+   BACKGROUND & INTERACTION (subtle)
+========================================= */
+
+/* พื้นหลังฝั่งฟอร์ม: ไล่สีอ่อนๆ */
+.auth-page {
+    background:
+        radial-gradient(circle at 85% 12%, #cff5f6 0%, transparent 42%),
+        radial-gradient(circle at 15% 92%, #f4fefe 0%, transparent 45%),
+        #e9fbfb;
+}
+
+/* แผงสีเขียว: gradient + จุดลายบางๆ */
+.auth-brand {
+    background:
+        radial-gradient(circle at 12% 8%, #4fd3db 0%, transparent 48%),
+        radial-gradient(circle at 92% 95%, #178792 0%, transparent 52%),
+        linear-gradient(160deg, #2bb7c1 0%, #1f9ca7 100%);
+}
+
+/* วงแสงลอยช้าๆ */
+.auth-brand::before {
+    content: "";
+    position: absolute;
+    inset: -25%;
+    z-index: 0;
+    pointer-events: none;
+
+    background:
+        radial-gradient(circle at 22% 26%, rgba(255, 255, 255, 0.17), transparent 28%),
+        radial-gradient(circle at 78% 74%, rgba(255, 255, 255, 0.12), transparent 30%);
+
+    animation: brand-drift 18s ease-in-out infinite alternate;
+}
+
+/* แว่นขยายตามเมาส์ (ส่องหาของหาย) */
+.auth-brand::after {
+    content: "";
+    position: absolute;
+    left: var(--mx, 50%);
+    top: var(--my, 50%);
+    z-index: 0;
+    width: 190px;
+    height: 190px;
+    translate: -50% -50%;
+    pointer-events: none;
+
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.14), transparent 70%);
+    box-shadow: 0 0 28px rgba(255, 255, 255, 0.18);
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.auth-brand:hover::after {
+    opacity: 1;
+}
+
+/* ไอคอนของหาย: ชั้นจาง + ชั้นสว่างที่โผล่เฉพาะในวงแว่นขยาย */
+.brand-items {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 1.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    opacity: 0.13;
+}
+
+.brand-items.lit {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    -webkit-mask-image: radial-gradient(circle 95px at var(--mx, 50%) var(--my, 50%), #000 70%, transparent 100%);
+    mask-image: radial-gradient(circle 95px at var(--mx, 50%) var(--my, 50%), #000 70%, transparent 100%);
+}
+
+.auth-brand:hover .brand-items.lit {
+    opacity: 0.85;
+}
+
+.brand-content {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes brand-drift {
+    from {
+        translate: -3% -2%;
+        rotate: 0deg;
+    }
+    to {
+        translate: 3% 3%;
+        rotate: 8deg;
+    }
+}
+
+/* การ์ดลอยเบาๆ + ขยายเล็กน้อยตอน hover */
+.location-card,
+.item-card {
+    transition:
+        scale 0.25s ease,
+        box-shadow 0.25s ease;
+    animation: card-float 6s ease-in-out infinite;
+}
+
+.item-card {
+    animation-duration: 7s;
+    animation-delay: -3s;
+}
+
+.location-card:hover,
+.item-card:hover {
+    scale: 1.05;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+}
+
+@keyframes card-float {
+    0%,
+    100% {
+        translate: 0 0;
+    }
+    50% {
+        translate: 0 -7px;
+    }
+}
+
+/* ข้อความ heading fade เข้าเมื่อสลับโหมด */
+.brand-heading {
+    animation: brand-fade-up 0.6s ease-out 0.3s both;
+}
+
+@keyframes brand-fade-up {
+    from {
+        opacity: 0;
+        translate: 0 10px;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-brand::before,
+    .location-card,
+    .item-card,
+    .brand-heading {
+        animation: none;
+    }
+}

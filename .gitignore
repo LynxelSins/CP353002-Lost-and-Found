@@ -36,13 +36,3 @@ build/
 ### VS Code ###
 .vscode/
 
-### OS & Temp ###
-.DS_Store
-.AppleDouble
-.LSOverride
-Thumbs.db
-Desktop.ini
-*.log
-.neon
-.env.local
-ืnode_modules/

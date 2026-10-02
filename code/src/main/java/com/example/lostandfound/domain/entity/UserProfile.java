@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.UUID;
 
 /**
- * ข้อมูลโปรไฟล์ของผู้ใช้ (One-to-One กับ User)
+ * ข้อมูลโปรไฟล์ของผู้ใช้ ( ID ชื่อ เบอร์โทร URLรูปภาพ) One-to-One กับ User
  */
 @Getter
 @Setter

@@ -1,12 +1,10 @@
 -- ===================================================================
 -- CP353002 Lost and Found System - Database Schema
--- Source of Truth (ddl-auto=validate: Hibernate จะไม่สร้าง/แก้ตารางเอง)
---
 -- ID Strategy (Hybrid):
 --   - UUID  : ตารางที่ผู้ใช้เข้าถึงผ่าน URL ได้ตรง ๆ (users, user_profiles, reports, claims)
---             -> กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
+--              กัน Enumeration Attack และซ่อนจำนวนข้อมูลในระบบ
 --   - BIGINT: Master data และตารางภายใน (categories, tags, report_images,
---             report_watchers, report_status_logs) -> เร็วกว่า ประหยัดพื้นที่กว่า
+--             report_watchers, report_status_logs)
 --
 -- Audit Strategy:
 --   - AuditableEntity : created_at + updated_at (แก้ไขได้)
@@ -22,12 +20,15 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS users (
     user_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email         VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    role          VARCHAR(20)  NOT NULL DEFAULT 'USER', -- USER, STAFF
+    password_hash VARCHAR(255),
+    firebase_uid  VARCHAR(128),
+    role          VARCHAR(20)  NOT NULL DEFAULT 'USER',
     created_at    TIMESTAMP    NOT NULL DEFAULT now(),
     updated_at    TIMESTAMP,
     CONSTRAINT uq_users_email UNIQUE (email),
-    CONSTRAINT chk_users_role CHECK (role IN ('USER', 'STAFF'))
+    CONSTRAINT uq_users_firebase_uid UNIQUE (firebase_uid),
+    CONSTRAINT chk_users_role CHECK (role IN ('USER', 'STAFF')),
+    CONSTRAINT chk_users_auth_method CHECK (password_hash IS NOT NULL OR firebase_uid IS NOT NULL)
 );
 
 -- ===================================================================
@@ -43,11 +44,11 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     updated_at   TIMESTAMP,
     CONSTRAINT fk_profile_user FOREIGN KEY (user_id)
         REFERENCES users (user_id) ON DELETE CASCADE,
-    CONSTRAINT uq_profile_user UNIQUE (user_id)  -- บังคับ 1:1
+    CONSTRAINT uq_profile_user UNIQUE (user_id)
 );
 
 -- ===================================================================
--- 3. categories  (BIGINT, AuditableEntity)  -- Master data แต่แก้ไขได้
+-- 3. categories  (BIGINT, AuditableEntity)
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS categories (
     category_id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -76,12 +77,12 @@ CREATE TABLE IF NOT EXISTS reports (
     report_id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id         UUID,
     category_id     BIGINT,
-    type            VARCHAR(20) NOT NULL,                    -- LOST, FOUND
+    type            VARCHAR(20) NOT NULL,
     title           VARCHAR(200) NOT NULL,
     description     TEXT,
     location_name   VARCHAR(255) NOT NULL,
     event_timestamp TIMESTAMP NOT NULL,
-    status          VARCHAR(20) NOT NULL DEFAULT 'OPEN',      -- OPEN, MATCH_PENDING, CLAIMED, CLOSED, REJECTED
+    status          VARCHAR(20) NOT NULL DEFAULT 'OPEN',
     created_at      TIMESTAMP NOT NULL DEFAULT now(),
     updated_at      TIMESTAMP,
     CONSTRAINT fk_report_user FOREIGN KEY (user_id)
@@ -98,7 +99,7 @@ CREATE INDEX IF NOT EXISTS idx_reports_user     ON reports (user_id);
 CREATE INDEX IF NOT EXISTS idx_reports_type     ON reports (type);
 
 -- ===================================================================
--- 6. report_images  (BIGINT, ImmutableEntity)  -- 1 report : N images
+-- 6. report_images  (BIGINT, ImmutableEntity)
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS report_images (
     image_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -112,12 +113,12 @@ CREATE TABLE IF NOT EXISTS report_images (
 CREATE INDEX IF NOT EXISTS idx_images_report ON report_images (report_id);
 
 -- ===================================================================
--- 7. report_status_logs  (BIGINT, ImmutableEntity)  -- history, ห้ามแก้ไข
+-- 7. report_status_logs  (BIGINT, ImmutableEntity)
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS report_status_logs (
     log_id      BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     report_id   UUID NOT NULL,
-    changed_by  UUID,                       -- SET NULL ได้: log ต้องอยู่ต่อแม้ user จะถูกลบ
+    changed_by  UUID,
     old_status  VARCHAR(20),
     new_status  VARCHAR(20) NOT NULL,
     created_at  TIMESTAMP NOT NULL DEFAULT now(),
@@ -130,7 +131,7 @@ CREATE TABLE IF NOT EXISTS report_status_logs (
 CREATE INDEX IF NOT EXISTS idx_logs_report_id ON report_status_logs (report_id);
 
 -- ===================================================================
--- 8. report_watchers  (BIGINT, ImmutableEntity)  -- 1 คน watch หลาย report
+-- 8. report_watchers  (BIGINT, ImmutableEntity)
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS report_watchers (
     watch_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -141,14 +142,14 @@ CREATE TABLE IF NOT EXISTS report_watchers (
         REFERENCES reports (report_id) ON DELETE CASCADE,
     CONSTRAINT fk_watcher_user FOREIGN KEY (user_id)
         REFERENCES users (user_id) ON DELETE CASCADE,
-    CONSTRAINT uq_watcher UNIQUE (report_id, user_id)   -- กันกด watch ซ้ำ
+    CONSTRAINT uq_watcher UNIQUE (report_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_watchers_report ON report_watchers (report_id);
 CREATE INDEX IF NOT EXISTS idx_watchers_user   ON report_watchers (user_id);
 
 -- ===================================================================
--- 9. claims  (UUID, AuditableEntity)  -- ระบบเคลมเต็มรูปแบบ
+-- 9. claims  (UUID, AuditableEntity)
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS claims (
     claim_id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -156,14 +157,14 @@ CREATE TABLE IF NOT EXISTS claims (
     claimant_id         UUID NOT NULL,
     evidence_text       TEXT,
     evidence_image_url  VARCHAR(500),
-    claim_status        VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED
-    meeting_location     VARCHAR(255),
-    meeting_time         TIMESTAMP,
+    claim_status        VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    meeting_location    VARCHAR(255),
+    meeting_time        TIMESTAMP,
     resolved_at         TIMESTAMP,
     created_at          TIMESTAMP NOT NULL DEFAULT now(),
     updated_at          TIMESTAMP,
     CONSTRAINT fk_claim_report FOREIGN KEY (report_id)
-        REFERENCES reports (report_id) ON DELETE RESTRICT,
+        REFERENCES reports (report_id) ON DELETE CASCADE,
     CONSTRAINT fk_claim_user FOREIGN KEY (claimant_id)
         REFERENCES users (user_id) ON DELETE RESTRICT,
     CONSTRAINT chk_claim_status CHECK (claim_status IN ('PENDING', 'APPROVED', 'REJECTED'))
@@ -173,14 +174,12 @@ CREATE INDEX IF NOT EXISTS idx_claims_report ON claims (report_id);
 CREATE INDEX IF NOT EXISTS idx_claims_claimant ON claims (claimant_id);
 
 -- กันยื่น PENDING ซ้ำซ้อนในโพสต์เดียวกันโดยคนเดิม (Partial Unique Index)
--- ทำผ่าน JPA annotation ไม่ได้ ต้องประกาศที่นี่เท่านั้น
 CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_pending_claim
     ON claims (report_id, claimant_id)
     WHERE claim_status = 'PENDING';
 
 -- ===================================================================
 -- 10. report_tags  (Composite PK, ไม่มี Entity/Repository แยก)
---     Many-to-Many ระหว่าง reports <-> tags ผ่าน @ManyToMany + @JoinTable
 -- ===================================================================
 CREATE TABLE IF NOT EXISTS report_tags (
     report_id  UUID NOT NULL,
@@ -194,3 +193,29 @@ CREATE TABLE IF NOT EXISTS report_tags (
 );
 
 CREATE INDEX IF NOT EXISTS idx_reporttags_tag ON report_tags (tag_id);
+
+-- ===================================================================
+-- 11. notifications  (BIGINT, ImmutableEntity + is_read)
+-- ===================================================================
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    recipient_id     UUID NOT NULL,
+    message          VARCHAR(500) NOT NULL,
+    is_read          BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at       TIMESTAMP NOT NULL DEFAULT now(),
+    CONSTRAINT fk_notification_recipient FOREIGN KEY (recipient_id)
+        REFERENCES users (user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications (recipient_id, created_at DESC);
+
+-- ===================================================================
+-- 12. stored_files  (UUID, ImmutableEntity) — เก็บรูปที่อัปโหลด
+-- ===================================================================
+CREATE TABLE IF NOT EXISTS stored_files (
+    file_id      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content_type VARCHAR(100) NOT NULL,
+    file_size    BIGINT       NOT NULL,
+    data         BYTEA        NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT now()
+);

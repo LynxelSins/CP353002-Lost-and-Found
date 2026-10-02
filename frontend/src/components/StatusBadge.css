@@ -1,0 +1,33 @@
+.status-badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge.open {
+    background: #e8f8f6;
+    color: #2dcfbf;
+}
+
+.status-badge.pending {
+    background: #fff6e0;
+    color: #b8860b;
+}
+
+.status-badge.claimed {
+    background: #e9f0ff;
+    color: #3457d5;
+}
+
+.status-badge.closed {
+    background: #f0f1f3;
+    color: #6b7480;
+}
+
+.status-badge.default {
+    background: #f0f1f3;
+    color: #6b7480;
+}

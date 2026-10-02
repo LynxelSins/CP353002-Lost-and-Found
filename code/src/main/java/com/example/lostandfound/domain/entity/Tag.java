@@ -9,7 +9,6 @@ import java.util.List;
 
 /**
  * แท็กของประกาศ (Master Data) — Many-to-Many กับ Report ผ่านตารางกลาง report_tags
- * (ไม่มี Entity แยกสำหรับ report_tags เพราะไม่มีคอลัมน์อื่นนอกจาก FK สองตัว)
  */
 @Getter
 @Setter
