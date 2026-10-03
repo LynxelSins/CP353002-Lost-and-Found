@@ -1,8 +1,8 @@
- /// controller/api/ReportController.java
 package com.example.lostandfound.controller.api;
 
 import java.util.UUID;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -44,7 +44,7 @@ public class ReportController {
         return ApiResponse.created(reportService.create(userId, request));
     }
 
-    // Pagination & Sorting endpoint เช่น GET /api/reports?tag=กระเป๋าสีน้ำตาล&page=0&size=10&sort=createdAt,desc
+    // Pagination & Sorting endpoint เช่น GET /api/v1/reports?tag=กระเป๋าสีน้ำตาล&page=0&size=10&sort=createdAt,desc
     @GetMapping
     public ApiResponse<Page<ReportSummaryResponse>> search(
             @RequestParam(required = false) ReportType type,
@@ -52,21 +52,21 @@ public class ReportController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String tag,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ApiResponse.success(reportService.search(type, status, categoryId, tag, keyword, pageable));
     }
 
     @GetMapping("/mine")
     public ApiResponse<Page<ReportSummaryResponse>> mine(
             @CurrentUser UUID userId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ApiResponse.success(reportService.getMyReports(userId, pageable));
     }
 
     @GetMapping("/watched")
     public ApiResponse<Page<ReportSummaryResponse>> watched(
             @CurrentUser UUID userId,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return ApiResponse.success(reportService.getWatchedReports(userId, pageable));
     }
 
@@ -82,9 +82,9 @@ public class ReportController {
     }
 
     @DeleteMapping("/{id}/watch")
-    public ApiResponse<Void> unwatch(@PathVariable UUID id, @CurrentUser UUID userId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void unwatch(@PathVariable UUID id, @CurrentUser UUID userId) {
         reportService.unwatch(id, userId);
-        return ApiResponse.success("เลิกติดตามประกาศนี้แล้ว", null);
     }
 
     @PostMapping("/{id}/close")
