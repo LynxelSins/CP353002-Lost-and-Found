@@ -1,3 +1,21 @@
+### Secrets (ห้าม commit) ###
+firebase-service-account.json
+**/firebase-service-account.json
+.env
+.env.*
+!.env.example
+
+### Uploads ที่เกิดตอนทดสอบ ###
+code/uploads/
+uploads/
+
+### Node ###
+node_modules/
+**/node_modules/
+/frontend/dist/
+npm-debug.log*
+
+### Maven / Spring Boot ###
 HELP.md
 target/
 **/target/
@@ -25,7 +43,6 @@ out/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 build/
@@ -35,3 +52,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### OS ###
+.DS_Store
+Thumbs.db
