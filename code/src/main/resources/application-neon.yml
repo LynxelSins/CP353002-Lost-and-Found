@@ -16,15 +16,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
+        default_batch_fetch_size: 50
     open-in-view: false
 
   sql:
     init:
-      mode: always   
+      mode: always
       # Neon เป็นฐานข้อมูลกลาง ยังไม่มีใครโหลด schema.sql/data.sql เข้าไปเอง -> ให้ Spring รันให้ตอน startup
 
 springdoc:
