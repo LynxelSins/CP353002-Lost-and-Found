@@ -36,3 +36,7 @@ export async function getWatchedReports(params = {}) {
     const { data } = await client.get("/api/v1/reports/watched", { params });
     return data.data;
 }
+
+export async function adminDeleteReport(id) {
+    await client.delete(`/api/v1/admin/reports/${id}`);
+}

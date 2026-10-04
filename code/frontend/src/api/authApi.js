@@ -1,7 +1,10 @@
 import client from "./client";
 
 export async function login(email, password) {
-    const { data } = await client.post("/api/v1/auth/login", { email, password });
+    const { data } = await client.post("/api/v1/auth/login", {
+        email,
+        password,
+    });
     localStorage.setItem("token", data.data.accessToken); // <-- ชื่อ field จริงคือ accessToken ไม่ใช่ token
     return data.data.user;
 }
@@ -43,4 +46,19 @@ export async function changePassword(currentPassword, newPassword) {
 
 export function logout() {
     localStorage.removeItem("token");
+}
+
+// อ่าน role จาก JWT เพื่อซ่อน/แสดงปุ่มใน UI (สิทธิ์จริงถูกตรวจที่ backend อีกชั้น)
+export function isStaff() {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) return false;
+        const base64 = token
+            .split(".")[1]
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+        return JSON.parse(atob(base64)).role === "STAFF";
+    } catch {
+        return false;
+    }
 }
