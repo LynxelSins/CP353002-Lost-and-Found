@@ -1,37 +1,37 @@
-### Secrets (ห้าม commit) ###
+###Secrets (ห้าม commit)###
 firebase-service-account.json
-**/firebase-service-account.json
+/firebase-service-account.json
 .env
 .env.*
 !.env.example
 
-### Uploads ที่เกิดตอนทดสอบ ###
+###Uploads ที่เกิดตอนทดสอบ###
 code/uploads/
 uploads/
 
-### Node ###
+###Node###
 node_modules/
-**/node_modules/
-/frontend/dist/
+/node_modules/
+code/frontend/dist/
 npm-debug.log*
 
-### Maven / Spring Boot ###
+###Maven / Spring Boot###
 HELP.md
 target/
-**/target/
+/target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+!/src/main//target/
+!/src/test//target/
 
-### IntelliJ IDEA ###
+###IntelliJ IDEA###
 .idea/
 *.iws
 *.iml
 *.ipr
 out/
-**/out/
+/out/
 
-### Eclipse ###
+###Eclipse###
 .apt_generated
 .classpath
 .factorypath
@@ -40,19 +40,19 @@ out/
 .springBeans
 .sts4-cache
 
-### NetBeans ###
+###NetBeans###
 /nbproject/private/
 /nbbuild/
 /nbdist/
 /.nb-gradle/
 build/
-**/build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+/build/
+!/src/main//build/
+!/src/test/**/build/
 
-### VS Code ###
+###VS Code###
 .vscode/
 
-### OS ###
+###OS###
 .DS_Store
 Thumbs.db
