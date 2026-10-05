@@ -7,14 +7,14 @@
 -- USERS (8 คน) -- password_hash เป็นค่า mock ไม่ใช่ BCrypt จริง (สำหรับ dev เท่านั้น)
 -- ---------------------------------------------------------------------
 INSERT INTO users (email, password_hash, role) VALUES
-('alice@example.com', '$2a$10$mockHashAlice000', 'USER'),
-('bob@example.com',   '$2a$10$mockHashBob000',  'USER'),
-('carol@example.com', '$2a$10$mockHashCarol000', 'USER'),
-('dave@example.com',  '$2a$10$mockHashDave000', 'USER'),
-('eve@example.com',   '$2a$10$mockHashEve000', 'USER'),
-('frank@example.com', '$2a$10$mockHashFrank000', 'USER'),
-('grace@example.com', '$2a$10$mockHashGrace000', 'STAFF'),
-('heidi@example.com', '$2a$10$mockHashHeidi000', 'USER');
+('alice@example.com', '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER'),
+('bob@example.com',   '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2',  'USER'),
+('carol@example.com', '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER'),
+('dave@example.com',  '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER'),
+('eve@example.com',   '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER'),
+('frank@example.com', '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER'),
+('grace@example.com', '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'STAFF'),
+('heidi@example.com', '$2a$10$m8//XzDmgI6.Bq3j3aUDduXi73Gpc2eDNX0bpj7kDRfKkU9DM9ee2', 'USER');
 
 -- ---------------------------------------------------------------------
 -- USER PROFILES (8 รายการ)
