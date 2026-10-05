@@ -1,0 +1,7 @@
+target/
+.git/
+.gitignore
+*.md
+frontend/
+.mvn/
+*.log

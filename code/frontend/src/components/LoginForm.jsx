@@ -159,10 +159,6 @@ function LoginForm({ onRegister, onGoogleLogin }) {
                 <div className="form-field">
                     <div className="password-label">
                         <label htmlFor="login-password">รหัสผ่าน</label>
-
-                        <button type="button" className="forgot-password">
-                            ลืมรหัสผ่าน?
-                        </button>
                     </div>
 
                     <div className="input-wrapper">
@@ -186,11 +182,6 @@ function LoginForm({ onRegister, onGoogleLogin }) {
                         </button>
                     </div>
                 </div>
-
-                <label className="remember-me">
-                    <input type="checkbox" />
-                    <span>จดจำฉันไว้</span>
-                </label>
 
                 <button
                     className="main-submit-button"
