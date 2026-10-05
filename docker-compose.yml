@@ -1,5 +1,19 @@
 services:
   # ===================================================================
+  # Frontend React (Vite + Nginx)
+  # ===================================================================
+  frontend:
+    build:
+      context: ./code/frontend
+      dockerfile: Dockerfile
+    container_name: lostfound-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80" # เอาพอร์ต 5173 บนเครื่อง ชี้เข้าไปที่พอร์ต 80 ของ Nginx ใน Container
+    depends_on:
+      - backend
+
+  # ===================================================================
   # Backend Spring Boot Service
   # ===================================================================
   backend:
@@ -11,13 +25,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      # ใช้โปรไฟล์ dev เพื่อต่อเข้า PostgreSQL ใน Docker network เดียวกัน
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: neon
       PORT: 8080
-      # ชี้ datasource ไปยังชื่อ service 'postgres' แทน localhost
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lost_and_found
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+      #SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lost_and_found
+      #SPRING_DATASOURCE_USERNAME: postgres
+      #SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       postgres:
         condition: service_healthy
