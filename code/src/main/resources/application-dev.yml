@@ -1,0 +1,42 @@
+spring:
+    application:
+        name: CP353002_Group12_LostAndFound
+
+  # ===================================================================
+  # PostgreSQL DataSource (Local Docker)
+  # ===================================================================
+    datasource:
+         # ชี้มาที่ Docker ในเครื่องตัวเอง พอร์ต 5432 (ไม่ต้องมี sslmode=require)
+        url: jdbc:postgresql://localhost:5432/lost_and_found
+        username: postgres
+        password: password
+        driver-class-name: org.postgresql.Driver
+
+  # ===================================================================
+  # JPA / Hibernate
+  # ===================================================================
+    jpa:
+        hibernate:
+            ddl-auto: validate
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+        open-in-view: false
+
+  # ===================================================================
+  # SQL Initialization
+  # ===================================================================
+    sql:
+        init:
+            mode: always # ให้รัน schema.sql ตอนสตาร์ท เพื่อสร้างตารางใน Docker ให้ครบ
+
+# ===================================================================
+# Swagger / OpenAPI
+# ===================================================================
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
