@@ -24,7 +24,7 @@ COPY --from=builder /app/target/CP353002_Group12_LostAndFound-*.jar app.jar
 # Expose server port
 EXPOSE 8080
 
-# Environment defaults
+# Environment defaults (เป็นค่าตั้งต้น หากไม่มีการ override)
 ENV SPRING_PROFILES_ACTIVE=neon
 ENV PORT=8080
 
