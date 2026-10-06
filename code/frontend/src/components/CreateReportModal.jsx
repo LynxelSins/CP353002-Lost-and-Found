@@ -5,6 +5,9 @@ import ActionButton from "./ActionButton.jsx";
 import { createReport } from "../api/reportApi.js";
 import { getTags } from "../api/tagApi.js";
 
+// แท็กที่มีอยู่: แสดงกี่อันก่อนซ่อนที่เหลือไว้หลังปุ่ม "…"
+const MAX_VISIBLE_AVAILABLE_TAGS = 8;
+
 function CreateReportModal({ onClose, onCreated }) {
     const [type, setType] = useState("lost");
     const [title, setTitle] = useState("");
@@ -17,10 +20,20 @@ function CreateReportModal({ onClose, onCreated }) {
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
     const [availableTags, setAvailableTags] = useState([]);
+    const [showAllAvailable, setShowAllAvailable] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [done, setDone] = useState(false);
     const [ratio, setRatio] = useState(0);
     const [error, setError] = useState("");
+
+    const canCollapseAvailable =
+        availableTags.length > MAX_VISIBLE_AVAILABLE_TAGS;
+    const visibleAvailableTags =
+        showAllAvailable || !canCollapseAvailable
+            ? availableTags
+            : availableTags.slice(0, MAX_VISIBLE_AVAILABLE_TAGS);
+    const hiddenAvailableCount =
+        availableTags.length - visibleAvailableTags.length;
 
     useEffect(() => {
         getTags()
@@ -120,8 +133,21 @@ function CreateReportModal({ onClose, onCreated }) {
                         <h2>แจ้งของหาย / พบ</h2>
                         <p>กรอกข้อมูลสิ่งของที่ต้องการแจ้ง</p>
                     </div>
-                    <button type="button" onClick={onClose}>
-                        ×
+                    <button type="button" onClick={onClose} aria-label="ปิด">
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M2 2l10 10M12 2L2 12"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -160,7 +186,7 @@ function CreateReportModal({ onClose, onCreated }) {
                     </label>
 
                     <label>
-                        วันที่
+                        วันที่ของหาย / วันที่พบของ
                         <input
                             type="date"
                             value={date}
@@ -190,13 +216,17 @@ function CreateReportModal({ onClose, onCreated }) {
                                 onChange={(e) => setTagInput(e.target.value)}
                                 onKeyDown={handleTagKeyDown}
                                 onBlur={() => addTag(tagInput)}
-                                placeholder={tags.length ? "เพิ่มแท็ก..." : "พิมพ์แท็กแล้วกด Enter"}
+                                placeholder={
+                                    tags.length
+                                        ? "เพิ่มแท็ก..."
+                                        : "พิมพ์แท็กแล้วกด Enter (ไม่ต้องใส่ #)"
+                                }
                             />
                         </div>
                         {availableTags.length > 0 && (
                             <div className="available-tags">
                                 <small>แท็กที่มีอยู่:</small>
-                                {availableTags.map((tag) => (
+                                {visibleAvailableTags.map((tag) => (
                                     <button
                                         type="button"
                                         className="available-tag"
@@ -206,9 +236,26 @@ function CreateReportModal({ onClose, onCreated }) {
                                         #{tag.tagName}
                                     </button>
                                 ))}
+                                {canCollapseAvailable && (
+                                    <button
+                                        type="button"
+                                        className="available-tag more-tags"
+                                        onClick={() =>
+                                            setShowAllAvailable((prev) => !prev)
+                                        }
+                                        title={
+                                            showAllAvailable
+                                                ? "แสดงน้อยลง"
+                                                : "แสดงแท็กทั้งหมด"
+                                        }
+                                    >
+                                        {showAllAvailable
+                                            ? "แสดงน้อยลง"
+                                            : `… +${hiddenAvailableCount}`}
+                                    </button>
+                                )}
                             </div>
                         )}
-                        <small className="tag-help">เพิ่มแท็กใหม่ได้เอง เช่น สีดำ, iPhone, มีเคส</small>
                     </label>
 
                     <label>

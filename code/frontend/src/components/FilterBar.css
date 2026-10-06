@@ -72,6 +72,17 @@
     font-weight: 700;
 }
 
+.popular-tag.more-tags {
+    background: white;
+    border: 1px dashed #14a7b3;
+    color: #14a7b3;
+    font-weight: 700;
+}
+
+.popular-tag.more-tags:hover {
+    background: #dff7f8;
+}
+
 .show-all {
     border: none;
     background: none;

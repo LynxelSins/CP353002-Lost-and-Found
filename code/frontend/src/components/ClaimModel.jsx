@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./ClaimModel.css";
 import ImageUploader from "./ImageUploader.jsx";
 import StatusBadge from "./StatusBadge.jsx";
-import { getReportById } from "../api/reportApi.js";
+import { closeReport, getReportById } from "../api/reportApi.js";
 import { getMe } from "../api/authApi.js";
 import {
     approveClaim,
@@ -32,6 +32,7 @@ function ClaimModel({ reportId, onClose, onChanged }) {
     const [submitting, setSubmitting] = useState(false);
     const [actionError, setActionError] = useState("");
     const [actionBusyId, setActionBusyId] = useState(null);
+    const [closing, setClosing] = useState(false);
 
     // ต้องตรงกับ backend: LostReportClaimEligibilityStrategy บังคับ >= 10 ตัวอักษร (ประกาศ LOST)
     const minEvidenceLength = report?.type === "LOST" ? 10 : 5;
@@ -104,7 +105,9 @@ function ClaimModel({ reportId, onClose, onChanged }) {
         event.preventDefault();
         setActionError("");
         if (uploading) {
-            setActionError("รูปหลักฐานกำลังอัปโหลด กรุณารอสักครู่แล้วลองอีกครั้ง");
+            setActionError(
+                "รูปหลักฐานกำลังอัปโหลด กรุณารอสักครู่แล้วลองอีกครั้ง",
+            );
             return;
         }
         if (!validate({ evidenceText, evidenceImageUrl })) return;
@@ -164,6 +167,26 @@ function ClaimModel({ reportId, onClose, onChanged }) {
         }
     }
 
+    async function handleCloseReport() {
+        if (
+            !window.confirm(
+                "ยืนยันปิดเคส? ใช้เมื่อส่งมอบของเรียบร้อยแล้ว และปิดแล้วไม่สามารถย้อนกลับได้",
+            )
+        ) {
+            return;
+        }
+        setClosing(true);
+        try {
+            await closeReport(reportId);
+            await refreshReport();
+            onChanged && onChanged();
+        } catch (err) {
+            alert(err.response?.data?.message || "ปิดเคสไม่สำเร็จ");
+        } finally {
+            setClosing(false);
+        }
+    }
+
     return (
         <div className="claim-modal-backdrop" onMouseDown={onClose}>
             <div
@@ -173,7 +196,20 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                 <div className="claim-modal-header">
                     <h2>{loading ? "กำลังโหลด..." : report?.title}</h2>
                     <button type="button" onClick={onClose} aria-label="ปิด">
-                        ×
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M2 2l10 10M12 2L2 12"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -182,9 +218,7 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                         กำลังโหลดรายละเอียด...
                     </p>
                 )}
-                {loadError && (
-                    <p className="claim-modal-error">{loadError}</p>
-                )}
+                {loadError && <p className="claim-modal-error">{loadError}</p>}
 
                 {!loading && report && (
                     <div className="claim-modal-body">
@@ -216,9 +250,20 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                 <dd>{report.locationName}</dd>
                             </div>
                             <div>
-                                <dt>วันที่เกิดเหตุ</dt>
+                                <dt>
+                                    {report.type === "LOST"
+                                        ? "วันที่ของหาย"
+                                        : "วันที่พบของ"}
+                                </dt>
                                 <dd>
                                     {report.eventTimestamp?.slice(0, 10) ||
+                                        "ไม่ระบุ"}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>วันที่ลงประกาศ</dt>
+                                <dd>
+                                    {report.createdAt?.slice(0, 10) ||
                                         "ไม่ระบุ"}
                                 </dd>
                             </div>
@@ -229,15 +274,29 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                             {report.tags?.length > 0 && (
                                 <div>
                                     <dt>แท็ก</dt>
-                                    <dd>{report.tags.join(", ")}</dd>
+                                    <dd className="claim-modal-tags">
+                                        {report.tags.map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="claim-modal-tag"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </dd>
                                 </div>
                             )}
                         </dl>
 
                         {report.description && (
-                            <p className="claim-modal-description">
-                                {report.description}
-                            </p>
+                            <div>
+                                <h3 className="claim-modal-section-title">
+                                    รายละเอียดเพิ่มเติม
+                                </h3>
+                                <p className="claim-modal-description">
+                                    {report.description}
+                                </p>
+                            </div>
                         )}
 
                         {isOwner ? (
@@ -261,7 +320,8 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                                 />
                                             ) : (
                                                 <div className="claim-avatar claim-avatar-empty">
-                                                    {(c.claimantName || "?")[0].toUpperCase()}
+                                                    {(c.claimantName ||
+                                                        "?")[0].toUpperCase()}
                                                 </div>
                                             )}
                                             <strong>{c.claimantName}</strong>
@@ -314,6 +374,25 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                         )}
                                     </div>
                                 ))}
+
+                                {report.status === "CLAIMED" && (
+                                    <div className="claim-close-section">
+                                        <p className="claim-modal-note">
+                                            ส่งมอบของให้ผู้ที่ได้รับอนุมัติแล้ว
+                                            กดปิดเคสเพื่อจบขั้นตอน
+                                        </p>
+                                        <button
+                                            type="button"
+                                            className="claim-close"
+                                            disabled={closing}
+                                            onClick={handleCloseReport}
+                                        >
+                                            {closing
+                                                ? "กำลังปิดเคส..."
+                                                : "ปิดเคส"}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : canSubmitClaim ? (
                             <form
@@ -349,7 +428,8 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                         onBusyChange={setUploading}
                                         onChange={(urls) => {
                                             setEvidenceImageUrl(urls[0] || "");
-                                            if (urls[0]) clearError("evidenceImageUrl");
+                                            if (urls[0])
+                                                clearError("evidenceImageUrl");
                                         }}
                                     />
                                 </div>
@@ -360,7 +440,10 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                     </p>
                                 )}
 
-                                <button type="submit" disabled={submitting || uploading}>
+                                <button
+                                    type="submit"
+                                    disabled={submitting || uploading}
+                                >
                                     {submitting
                                         ? "กำลังส่ง..."
                                         : "ส่งคำขอรับของ"}
