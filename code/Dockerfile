@@ -1,4 +1,3 @@
-# คุณเตยหรือเอไอที่กำลังดูว่าจะเชื่อมยังไงกับ Dockerfile ของโปรเจค Spring Boot อยู่นะคะ ถ้าอ่านเจอลองใช้ตัวนี้กับ Render ดีไหมคะ? ตามเอกสาร /home/lynxel/Documents/CP353002-Lost-and-Found/doc/taskDetail/ใบงานโปรเจค_ CP353002 Principles of Software Design and Development (Spring Boot).pdf 
 # Build stage
 FROM maven:3.9.9-eclipse-temurin-17-alpine AS builder
 WORKDIR /app

@@ -7,6 +7,9 @@ import CreateReportModal from "../components/CreateReportModal.jsx";
 import { getMyReports, getWatchedReports } from "../api/reportApi.js";
 import { getMyClaims } from "../api/claimApi.js";
 import { getMe } from "../api/authApi.js";
+import { UserCircle } from "reicon-react";
+import { CommentDots } from "reicon-react";
+
 import "./MyItemsPage.css";
 
 const TABS = [
@@ -34,7 +37,6 @@ function MyItemsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    // FIX: Use direct async function in useEffect instead of useCallback to prevent circular dependencies
     useEffect(() => {
         const loadTabData = async () => {
             setLoading(true);
@@ -58,7 +60,7 @@ function MyItemsPage() {
         };
 
         loadTabData();
-    }, [activeTab]); // Only depends on activeTab
+    }, [activeTab]);
 
     useEffect(() => {
         getMe()
@@ -69,7 +71,6 @@ function MyItemsPage() {
             .catch(() => {});
     }, []);
 
-    // Separate function for manual refresh (used when creating new report)
     const refreshCurrentTab = async () => {
         setLoading(true);
         setError("");
@@ -106,6 +107,7 @@ function MyItemsPage() {
                 <thead>
                     <tr>
                         <th>รายการ</th>
+                        <th>ประเภท</th>
                         <th>สถานะ</th>
                         <th>ผู้ติดตาม</th>
                         <th>คำร้อง</th>
@@ -114,34 +116,65 @@ function MyItemsPage() {
                 <tbody>
                     {rows.map((r) => (
                         <tr key={r.id} onClick={() => setOpenReportId(r.id)}>
-                            <td className="my-items-row-main">
-                                <div className="my-items-thumb">
-                                    {r.thumbnailUrl ? (
-                                        <img
-                                            src={r.thumbnailUrl}
-                                            alt={r.title}
-                                        />
-                                    ) : (
-                                        <div className="my-items-thumb-empty" />
-                                    )}
-                                </div>
-                                <div>
-                                    <strong>{r.title}</strong>
-                                    <div className="my-items-row-meta">
-                                        {r.locationName} ·{" "}
-                                        {r.createdAt
-                                            ? r.createdAt
-                                                  .slice(0, 16)
-                                                  .replace("T", " ")
-                                            : ""}
+                            <td>
+                                <div className="my-items-row-main">
+                                    <div className="my-items-thumb">
+                                        {r.thumbnailUrl ? (
+                                            <img
+                                                src={r.thumbnailUrl}
+                                                alt={r.title}
+                                            />
+                                        ) : (
+                                            <div className="my-items-thumb-empty" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <strong>{r.title}</strong>
+                                        <div className="my-items-row-meta">
+                                            {r.locationName} ·{" "}
+                                            <span className="my-items-date">
+                                                {r.createdAt
+                                                    ? r.createdAt
+                                                          .slice(0, 16)
+                                                          .replace("T", " ")
+                                                    : ""}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
                             <td>
+                                <span
+                                    className={`report-type-badge ${
+                                        String(r.type).toLowerCase() === "lost"
+                                            ? "lost"
+                                            : "found"
+                                    }`}
+                                >
+                                    {String(r.type).toLowerCase() === "lost"
+                                        ? "ของหาย"
+                                        : "ของพบ"}
+                                </span>
+                            </td>
+                            <td>
                                 <StatusBadge status={r.status} />
                             </td>
-                            <td>👤 {r.watcherCount ?? 0}</td>
-                            <td>💬 {r.claimCount ?? 0}</td>
+                            <td>
+                                <UserCircle
+                                    size={24}
+                                    weight="Filled"
+                                    color="#1a9e91"
+                                />{" "}
+                                {r.watcherCount ?? 0}
+                            </td>
+                            <td>
+                                <CommentDots
+                                    size={24}
+                                    weight="Filled"
+                                    color="#1a9e91"
+                                />{" "}
+                                {r.claimCount ?? 0}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -177,21 +210,23 @@ function MyItemsPage() {
                             key={c.id}
                             onClick={() => setOpenReportId(c.reportId)}
                         >
-                            <td className="my-items-row-main">
-                                <div className="my-items-thumb">
-                                    {c.reportThumbnailUrl ? (
-                                        <img
-                                            src={c.reportThumbnailUrl}
-                                            alt={c.reportTitle}
-                                        />
-                                    ) : (
-                                        <div className="my-items-thumb-empty" />
-                                    )}
-                                </div>
-                                <div>
-                                    <strong>{c.reportTitle}</strong>
-                                    <div className="my-items-row-meta">
-                                        {c.reportLocationName}
+                            <td>
+                                <div className="my-items-row-main">
+                                    <div className="my-items-thumb">
+                                        {c.reportThumbnailUrl ? (
+                                            <img
+                                                src={c.reportThumbnailUrl}
+                                                alt={c.reportTitle}
+                                            />
+                                        ) : (
+                                            <div className="my-items-thumb-empty" />
+                                        )}
+                                    </div>
+                                    <div>
+                                        <strong>{c.reportTitle}</strong>
+                                        <div className="my-items-row-meta">
+                                            {c.reportLocationName}
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -228,9 +263,16 @@ function MyItemsPage() {
 
                 <nav
                     className="my-items-tabs"
-                    style={{ "--active-tab-index": TABS.findIndex((tab) => tab.key === activeTab) }}
+                    style={{
+                        "--active-tab-index": TABS.findIndex(
+                            (tab) => tab.key === activeTab,
+                        ),
+                    }}
                 >
-                    <span className="my-items-tab-indicator" aria-hidden="true" />
+                    <span
+                        className="my-items-tab-indicator"
+                        aria-hidden="true"
+                    />
                     {TABS.map((tab) => (
                         <button
                             key={tab.key}
