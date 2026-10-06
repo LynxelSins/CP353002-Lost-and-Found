@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { House } from "reicon-react";
 import { Hearts } from "reicon-react";
@@ -7,12 +8,39 @@ import "./Sidebar.css";
 
 function Sidebar({ active = "home", onReport }) {
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+
+    function go(path) {
+        setOpen(false);
+        navigate(path);
+    }
+
+    function handleReport() {
+        setOpen(false);
+        if (onReport) onReport();
+    }
 
     return (
-        <aside className="sidebar">
+        <>
+        <button
+            type="button"
+            className="sidebar-toggle"
+            aria-label="เปิดเมนู"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+        >
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div
+            className={open ? "sidebar-backdrop show" : "sidebar-backdrop"}
+            onClick={() => setOpen(false)}
+        />
+        <aside className={open ? "sidebar open" : "sidebar"}>
             <button
                 className="sidebar-brand"
-                onClick={() => navigate("/items")}
+                onClick={() => go("/items")}
             >
                 <span className="sidebar-brand-icon"><Search4 size={24} weight="Filled" /></span>
                 <span>
@@ -28,7 +56,7 @@ function Sidebar({ active = "home", onReport }) {
                             ? "sidebar-link active"
                             : "sidebar-link"
                     }
-                    onClick={() => navigate("/items")}
+                    onClick={() => go("/items")}
                 >
                     <House size={24} />
                     หน้าแรก
@@ -40,18 +68,19 @@ function Sidebar({ active = "home", onReport }) {
                             ? "sidebar-link active"
                             : "sidebar-link"
                     }
-                    onClick={() => navigate("/my-items-list")}
+                    onClick={() => go("/my-items-list")}
                 >
                     <Hearts size={24} />
                     รายการของฉัน
                 </button>
             </nav>
 
-            <button className="sidebar-report" onClick={onReport}>
+            <button className="sidebar-report" onClick={handleReport}>
                 <AddCircle size={24} />
                 แจ้งของหาย/พบ
             </button>
         </aside>
+        </>
     );
 }
 
