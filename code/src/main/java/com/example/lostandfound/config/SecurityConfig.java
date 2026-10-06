@@ -39,9 +39,9 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
-                    .requestMatchers("/uploads/**").permitAll()   // <-- เพิ่มบรรทัดนี้
+                   .requestMatchers("/api/v1/auth/**").permitAll()
+.requestMatchers(HttpMethod.GET, "/api/files/**", "/api/v1/files/**").permitAll()
+                    .requestMatchers("/uploads/**").permitAll()   
                     .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
                     .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

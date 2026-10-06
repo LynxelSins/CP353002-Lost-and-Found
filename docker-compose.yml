@@ -1,21 +1,85 @@
 services:
+  # ===================================================================
+  # Frontend React (Vite + Nginx)
+  # ===================================================================
+  frontend:
+    build:
+      context: ./code/frontend
+      dockerfile: Dockerfile
+      args:
+        # ใส่ URL ของ Backend บน Local เพื่อให้ Browser เครื่องเรายิง API เข้าพอร์ต 8080 ถูกต้อง
+        VITE_API_BASE_URL: http://localhost:8080
+    container_name: lostfound-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  # ===================================================================
+  # Backend Spring Boot Service
+  # ===================================================================
+  backend:
+    build:
+      context: ./code
+      dockerfile: Dockerfile
+    container_name: lostfound-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: neon  # ใช้ Neon Cloud DB เป็นหลัก
+      PORT: 8080
+
+#  backend:
+   # ...
+  #  environment:
+    #  SPRING_PROFILES_ACTIVE: dev   # เปลี่ยนกลับมาใช้ dev profile
+   #   PORT: 8080
+      # Override ค่าให้ชี้มาที่ container postgres ในเครื่อง
+   #   SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lost_and_found
+     # SPRING_DATASOURCE_USERNAME: postgres
+    #  SPRING_DATASOURCE_PASSWORD: password
+   # depends_on:
+     # postgres:
+       # condition: service_healthy#
+
+  # ===================================================================
+  # Local PostgreSQL Database
+  # ===================================================================
   postgres:
     image: postgres:16
-    container_name: lostfound-pg
+    container_name: lostfound-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: your_local_user
-      POSTGRES_PASSWORD: your_local_password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: lost_and_found
     ports:
       - "5432:5432"
     volumes:
       - lostfound_pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U your_local_user -d lost_and_found"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d lost_and_found"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  # ===================================================================
+  # pgAdmin Database Management Tool
+  # ===================================================================
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: lostfound-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   lostfound_pg_data:
