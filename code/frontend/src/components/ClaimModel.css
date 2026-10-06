@@ -164,6 +164,13 @@
     white-space: nowrap;
 }
 
+.claim-modal-section-title {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #394552;
+}
+
 .claim-modal-description {
     font-size: 13px;
     line-height: 1.6;

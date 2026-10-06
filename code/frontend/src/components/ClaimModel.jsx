@@ -289,9 +289,14 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                         </dl>
 
                         {report.description && (
-                            <p className="claim-modal-description">
-                                {report.description}
-                            </p>
+                            <div>
+                                <h3 className="claim-modal-section-title">
+                                    รายละเอียดเพิ่มเติม
+                                </h3>
+                                <p className="claim-modal-description">
+                                    {report.description}
+                                </p>
+                            </div>
                         )}
 
                         {isOwner ? (
