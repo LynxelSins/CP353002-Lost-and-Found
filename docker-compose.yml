@@ -30,7 +30,20 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: neon  # ใช้ Neon Cloud DB เป็นหลัก
       PORT: 8080
-      
+
+#  backend:
+   # ...
+  #  environment:
+    #  SPRING_PROFILES_ACTIVE: dev   # เปลี่ยนกลับมาใช้ dev profile
+   #   PORT: 8080
+      # Override ค่าให้ชี้มาที่ container postgres ในเครื่อง
+   #   SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/lost_and_found
+     # SPRING_DATASOURCE_USERNAME: postgres
+    #  SPRING_DATASOURCE_PASSWORD: password
+   # depends_on:
+     # postgres:
+       # condition: service_healthy#
+
   # ===================================================================
   # Local PostgreSQL Database
   # ===================================================================
