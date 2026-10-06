@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import "./ClaimModel.css";
 import ImageUploader from "./ImageUploader.jsx";
 import StatusBadge from "./StatusBadge.jsx";
-import { getReportById } from "../api/reportApi.js";
+import { closeReport, getReportById } from "../api/reportApi.js";
 import { getMe } from "../api/authApi.js";
 import {
     approveClaim,
@@ -32,6 +32,7 @@ function ClaimModel({ reportId, onClose, onChanged }) {
     const [submitting, setSubmitting] = useState(false);
     const [actionError, setActionError] = useState("");
     const [actionBusyId, setActionBusyId] = useState(null);
+    const [closing, setClosing] = useState(false);
 
     // ต้องตรงกับ backend: LostReportClaimEligibilityStrategy บังคับ >= 10 ตัวอักษร (ประกาศ LOST)
     const minEvidenceLength = report?.type === "LOST" ? 10 : 5;
@@ -161,6 +162,26 @@ function ClaimModel({ reportId, onClose, onChanged }) {
             alert(err.response?.data?.message || "ดำเนินการไม่สำเร็จ");
         } finally {
             setActionBusyId(null);
+        }
+    }
+
+    async function handleCloseReport() {
+        if (
+            !window.confirm(
+                "ยืนยันปิดเคส? ใช้เมื่อส่งมอบของเรียบร้อยแล้ว และปิดแล้วไม่สามารถย้อนกลับได้",
+            )
+        ) {
+            return;
+        }
+        setClosing(true);
+        try {
+            await closeReport(reportId);
+            await refreshReport();
+            onChanged && onChanged();
+        } catch (err) {
+            alert(err.response?.data?.message || "ปิดเคสไม่สำเร็จ");
+        } finally {
+            setClosing(false);
         }
     }
 
@@ -314,6 +335,23 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                         )}
                                     </div>
                                 ))}
+
+                                {report.status === "CLAIMED" && (
+                                    <div className="claim-close-section">
+                                        <p className="claim-modal-note">
+                                            ส่งมอบของให้ผู้ที่ได้รับอนุมัติแล้ว
+                                            กดปิดเคสเพื่อจบขั้นตอน
+                                        </p>
+                                        <button
+                                            type="button"
+                                            className="claim-close"
+                                            disabled={closing}
+                                            onClick={handleCloseReport}
+                                        >
+                                            {closing ? "กำลังปิดเคส..." : "ปิดเคส"}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ) : canSubmitClaim ? (
                             <form
