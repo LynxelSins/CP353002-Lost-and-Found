@@ -1,0 +1,37 @@
+name: CD – Deploy to Render
+
+# ทำงานเฉพาะเมื่อ push ไปยัง main เท่านั้น
+# (หลัง CI ผ่านแล้ว)
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # กด Trigger ด้วยมือได้จาก GitHub Actions tab
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend → Render
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy (Backend)
+        run: |
+          curl -s --fail-with-body \
+            "${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}" \
+            -X POST
+        # หมายเหตุ: ต้องไปเพิ่ม Secret ชื่อ RENDER_BACKEND_DEPLOY_HOOK ก่อน
+        # วิธี: Render Dashboard → เลือก Backend service → Settings → Deploy Hooks → Copy URL
+        # แล้วนำไปเพิ่มที่: GitHub repo → Settings → Secrets and variables → Actions → New secret
+
+  deploy-frontend:
+    name: Deploy Frontend → Render
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Render Deploy (Frontend)
+        run: |
+          curl -s --fail-with-body \
+            "${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}" \
+            -X POST
+        # หมายเหตุ: ต้องไปเพิ่ม Secret ชื่อ RENDER_FRONTEND_DEPLOY_HOOK ก่อน
+        # วิธี: Render Dashboard → เลือก Frontend service → Settings → Deploy Hooks → Copy URL
+        # แล้วนำไปเพิ่มที่: GitHub repo → Settings → Secrets and variables → Actions → New secret
