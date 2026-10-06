@@ -7,12 +7,12 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy frontend source code
-COPY . .
-
-# Set Build Argument and Environment Variable for Vite
+# Declare Build Argument & ENV before copying code (ช่วยให้ Docker Cache ทำงานไวขึ้น)
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
+# Copy frontend source code
+COPY . .
 
 # Build production bundle
 RUN npm run build
