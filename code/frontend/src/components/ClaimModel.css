@@ -246,3 +246,25 @@
     opacity: 0.6;
     cursor: default;
 }
+
+.claim-close-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.claim-close {
+    padding: 11px;
+    border: 0;
+    border-radius: 8px;
+    background: #1a9eaa;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.claim-close:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
