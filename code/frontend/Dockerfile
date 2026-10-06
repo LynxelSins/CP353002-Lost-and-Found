@@ -10,6 +10,10 @@ RUN npm ci
 # Copy frontend source code
 COPY . .
 
+# Set Build Argument and Environment Variable for Vite
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build production bundle
 RUN npm run build
 
