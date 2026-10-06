@@ -2,8 +2,24 @@ import { useEffect, useState } from "react";
 import { getTags } from "../api/tagApi.js";
 import "./FilterBar.css";
 
+// แสดงแท็กกี่อันก่อนจะซ่อนที่เหลือไว้หลังปุ่ม "…"
+const MAX_VISIBLE_TAGS = 8;
+
 function FilterBar({ filters, setFilters }) {
     const [tags, setTags] = useState([]);
+    const [showAllTags, setShowAllTags] = useState(false);
+
+    const canCollapse = tags.length > MAX_VISIBLE_TAGS;
+
+    // ตอนพับ: แสดง MAX_VISIBLE_TAGS อันแรก + แท็กที่ถูกเลือกอยู่ (กันไม่ให้แท็กที่เลือกหายไปจากหน้าจอ)
+    const visibleTags =
+        showAllTags || !canCollapse
+            ? tags
+            : tags.filter(
+                  (tag, index) =>
+                      index < MAX_VISIBLE_TAGS || tag.tagName === filters.tag,
+              );
+    const hiddenCount = tags.length - visibleTags.length;
 
     useEffect(() => {
         getTags()
@@ -67,7 +83,7 @@ function FilterBar({ filters, setFilters }) {
                 >
                     ทั้งหมด
                 </button>
-                {tags.map((tag) => (
+                {visibleTags.map((tag) => (
                     <button
                         key={tag.id}
                         type="button"
@@ -81,6 +97,16 @@ function FilterBar({ filters, setFilters }) {
                         {tag.tagName}
                     </button>
                 ))}
+                {canCollapse && (showAllTags || hiddenCount > 0) && (
+                    <button
+                        type="button"
+                        className="popular-tag more-tags"
+                        onClick={() => setShowAllTags((prev) => !prev)}
+                        title={showAllTags ? "แสดงน้อยลง" : "แสดงแท็กทั้งหมด"}
+                    >
+                        {showAllTags ? "แสดงน้อยลง" : `… +${hiddenCount}`}
+                    </button>
+                )}
                 {tags.length === 0 && (
                     <span className="no-tags">ยังไม่มีแท็ก</span>
                 )}

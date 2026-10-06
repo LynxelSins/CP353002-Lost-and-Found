@@ -105,7 +105,9 @@ function ClaimModel({ reportId, onClose, onChanged }) {
         event.preventDefault();
         setActionError("");
         if (uploading) {
-            setActionError("รูปหลักฐานกำลังอัปโหลด กรุณารอสักครู่แล้วลองอีกครั้ง");
+            setActionError(
+                "รูปหลักฐานกำลังอัปโหลด กรุณารอสักครู่แล้วลองอีกครั้ง",
+            );
             return;
         }
         if (!validate({ evidenceText, evidenceImageUrl })) return;
@@ -194,7 +196,20 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                 <div className="claim-modal-header">
                     <h2>{loading ? "กำลังโหลด..." : report?.title}</h2>
                     <button type="button" onClick={onClose} aria-label="ปิด">
-                        ×
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M2 2l10 10M12 2L2 12"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -203,9 +218,7 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                         กำลังโหลดรายละเอียด...
                     </p>
                 )}
-                {loadError && (
-                    <p className="claim-modal-error">{loadError}</p>
-                )}
+                {loadError && <p className="claim-modal-error">{loadError}</p>}
 
                 {!loading && report && (
                     <div className="claim-modal-body">
@@ -237,9 +250,20 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                 <dd>{report.locationName}</dd>
                             </div>
                             <div>
-                                <dt>วันที่เกิดเหตุ</dt>
+                                <dt>
+                                    {report.type === "LOST"
+                                        ? "วันที่ของหาย"
+                                        : "วันที่พบของ"}
+                                </dt>
                                 <dd>
                                     {report.eventTimestamp?.slice(0, 10) ||
+                                        "ไม่ระบุ"}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>วันที่ลงประกาศ</dt>
+                                <dd>
+                                    {report.createdAt?.slice(0, 10) ||
                                         "ไม่ระบุ"}
                                 </dd>
                             </div>
@@ -250,7 +274,16 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                             {report.tags?.length > 0 && (
                                 <div>
                                     <dt>แท็ก</dt>
-                                    <dd>{report.tags.join(", ")}</dd>
+                                    <dd className="claim-modal-tags">
+                                        {report.tags.map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="claim-modal-tag"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </dd>
                                 </div>
                             )}
                         </dl>
@@ -282,7 +315,8 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                                 />
                                             ) : (
                                                 <div className="claim-avatar claim-avatar-empty">
-                                                    {(c.claimantName || "?")[0].toUpperCase()}
+                                                    {(c.claimantName ||
+                                                        "?")[0].toUpperCase()}
                                                 </div>
                                             )}
                                             <strong>{c.claimantName}</strong>
@@ -348,7 +382,9 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                             disabled={closing}
                                             onClick={handleCloseReport}
                                         >
-                                            {closing ? "กำลังปิดเคส..." : "ปิดเคส"}
+                                            {closing
+                                                ? "กำลังปิดเคส..."
+                                                : "ปิดเคส"}
                                         </button>
                                     </div>
                                 )}
@@ -387,7 +423,8 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                         onBusyChange={setUploading}
                                         onChange={(urls) => {
                                             setEvidenceImageUrl(urls[0] || "");
-                                            if (urls[0]) clearError("evidenceImageUrl");
+                                            if (urls[0])
+                                                clearError("evidenceImageUrl");
                                         }}
                                     />
                                 </div>
@@ -398,7 +435,10 @@ function ClaimModel({ reportId, onClose, onChanged }) {
                                     </p>
                                 )}
 
-                                <button type="submit" disabled={submitting || uploading}>
+                                <button
+                                    type="submit"
+                                    disabled={submitting || uploading}
+                                >
                                     {submitting
                                         ? "กำลังส่ง..."
                                         : "ส่งคำขอรับของ"}

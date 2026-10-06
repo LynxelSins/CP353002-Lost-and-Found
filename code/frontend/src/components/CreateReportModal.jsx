@@ -120,8 +120,21 @@ function CreateReportModal({ onClose, onCreated }) {
                         <h2>แจ้งของหาย / พบ</h2>
                         <p>กรอกข้อมูลสิ่งของที่ต้องการแจ้ง</p>
                     </div>
-                    <button type="button" onClick={onClose}>
-                        ×
+                    <button type="button" onClick={onClose} aria-label="ปิด">
+                        <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M2 2l10 10M12 2L2 12"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                            />
+                        </svg>
                     </button>
                 </div>
 
@@ -190,7 +203,11 @@ function CreateReportModal({ onClose, onCreated }) {
                                 onChange={(e) => setTagInput(e.target.value)}
                                 onKeyDown={handleTagKeyDown}
                                 onBlur={() => addTag(tagInput)}
-                                placeholder={tags.length ? "เพิ่มแท็ก..." : "พิมพ์แท็กแล้วกด Enter"}
+                                placeholder={
+                                    tags.length
+                                        ? "เพิ่มแท็ก..."
+                                        : "พิมพ์แท็กแล้วกด Enter"
+                                }
                             />
                         </div>
                         {availableTags.length > 0 && (
@@ -208,7 +225,9 @@ function CreateReportModal({ onClose, onCreated }) {
                                 ))}
                             </div>
                         )}
-                        <small className="tag-help">เพิ่มแท็กใหม่ได้เอง เช่น สีดำ, iPhone, มีเคส</small>
+                        <small className="tag-help">
+                            เพิ่มแท็กใหม่ได้เอง เช่น สีดำ, iPhone, มีเคส
+                        </small>
                     </label>
 
                     <label>
