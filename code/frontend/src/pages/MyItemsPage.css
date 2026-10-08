@@ -382,7 +382,7 @@
 
 @media (max-width: 1100px) {
     .my-items-main {
-        margin-left: 220px;
+        margin-left: 250px;
         padding: 26px 24px;
     }
 
@@ -409,11 +409,6 @@
 }
 
 @media (max-width: 850px) {
-    .my-items-main {
-        margin-left: 210px;
-        padding: 20px;
-    }
-
     .my-items-tabs {
         width: 100%;
         overflow-x: auto;
@@ -426,5 +421,167 @@
 
     .my-items-tab-indicator {
         width: 140px;
+    }
+}
+
+@media (max-width: 800px) {
+    .my-items-main {
+        margin-left: 0;
+        padding: 14px 16px 20px;
+    }
+
+    .my-items-header {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .my-items-header .user-header-bar {
+        align-self: flex-end;
+        min-height: 42px;
+    }
+
+    .my-items-header h1 {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 800px) {
+    .my-items-main {
+        overflow-x: hidden;
+    }
+
+    /* เปลี่ยนตารางเป็นการ์ด */
+    .my-items-table {
+        min-width: 0;
+        width: 100%;
+        display: block;
+        background: transparent;
+        border-radius: 0;
+        overflow: visible;
+    }
+
+    .my-items-table thead {
+        display: none;               /* ซ่อนหัวตาราง */
+    }
+
+    .my-items-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .my-items-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px 8px;
+        padding: 12px;
+        background: #ffffff;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(22, 50, 58, 0.06);
+    }
+
+    .my-items-table tbody tr:hover {
+        background: #ffffff;
+    }
+
+    .my-items-table td,
+    .my-items-table td:first-child {
+        display: block;
+        width: auto !important;       /* ล้าง width % ที่ตั้งไว้ตอนเป็นตาราง */
+        height: auto;
+        padding: 0;
+        border-bottom: none;
+        text-align: left;
+    }
+
+    /* ส่วนรูป + ชื่อ อยู่บรรทัดบนเต็มความกว้าง */
+    .my-items-table td:nth-child(1) {
+        grid-column: 1 / -1;
+    }
+
+    .my-items-thumb {
+        width: 60px;
+        height: 60px;
+        flex-basis: 60px;
+    }
+
+    .my-items-row-main {
+        gap: 12px;
+    }
+
+    .my-items-row-main strong {
+        font-size: 15px;
+        white-space: normal;          /* ชื่อยาวขึ้นได้ 2 บรรทัด */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .my-items-row-meta {
+        font-size: 12px;
+    }
+
+    /* คอลัมน์ที่เหลือ (ประเภท/สถานะ/ฯลฯ) เรียงเป็นแถบเล็ก ๆ ใต้การ์ด */
+    .my-items-table td:nth-child(n + 2) {
+        grid-column: auto;
+        font-size: 12px;
+        white-space: normal;
+    }
+
+    .my-items-table td:nth-child(2) {
+        grid-column: 1 / 2;
+    }
+
+    .my-items-table td:nth-child(3),
+    .my-items-table td:nth-child(4),
+    .my-items-table td:nth-child(5) {
+        justify-self: end;
+    }
+
+    .claim-status,
+    .report-type-badge,
+    .my-items-table td:nth-child(3) > * {
+        min-width: 72px;
+        width: auto !important;
+        max-width: none;
+        height: 26px !important;
+        padding: 0 10px !important;
+        font-size: 11px;
+    }
+
+    .my-items-empty {
+        padding: 40px 16px;
+    }
+}
+
+@media (max-width: 850px) {
+    .my-items-tabs {
+        width: 100%;
+        box-sizing: border-box;
+        gap: 4px;
+        padding: 4px;
+        overflow: hidden;
+    }
+
+    .my-items-tabs button {
+        flex: 1 1 0;
+        min-width: 0;              /* ให้หดได้ตามจอ */
+        padding: 6px 4px;
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: normal;       /* ข้อความขึ้นบรรทัดใหม่ได้ ไม่โดนตัด */
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+    }
+
+    .my-items-tab-indicator {
+        top: 4px;
+        bottom: 4px;
+        left: 4px;
+        /* แบ่ง 3 ส่วนเท่ากัน หักช่องว่าง padding 8px และ gap 4px x 2 */
+        width: calc((100% - 8px - 8px) / 3);
+        transform: translateX(calc(var(--active-tab-index) * (100% + 4px)));
     }
 }

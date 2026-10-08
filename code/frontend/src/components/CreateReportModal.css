@@ -254,6 +254,17 @@
     color: #119aa7;
 }
 
+.available-tag.more-tags {
+    background: white;
+    border: 1px dashed #14a7b3;
+    color: #14a7b3;
+    font-weight: 700;
+}
+
+.available-tag.more-tags:hover {
+    background: #dff7f8;
+}
+
 .tag-help {
     display: block;
     margin-top: 5px;

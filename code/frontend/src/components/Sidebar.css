@@ -109,8 +109,64 @@
     background: #209ca6;
 }
 
+.sidebar-toggle,
+.sidebar-backdrop {
+    display: none;
+}
+
 @media (max-width: 800px) {
     .sidebar {
-        width: 210px;
+        width: 260px;
+        max-width: 80vw;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 40;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar-toggle {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 30;
+        width: 42px;
+        height: 42px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid #dfe6e8;
+        border-radius: 10px;
+        background: #ffffff;
+        cursor: pointer;
+    }
+
+    .sidebar-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        border-radius: 2px;
+        background: #27aeb8;
+    }
+
+    .sidebar-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 35;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    .sidebar-backdrop.show {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
