@@ -7,15 +7,15 @@
 | 1 | นางสาวณัฐนันทน์ บุษดี| 673380037-1 | natthanan.bo@kkumail.com | 01 | `natthanan_6733800371_01` | **Backend Data Layer & Document Master:** Database Schema, Entity, Spring Data JPA Repository, คุมภาพรวมเอกสารและ Diagrams |
 | 2 | นางสาวศิริรัตน์ ชัยชนะ| 673380060-6 | sirirat.chai@kkumail.com | 01 | `sirirat_6733800606_01` | **Core Backend Logic & API Service:** REST Controllers, Service Layer, DTO/Mapper, Validation, Swagger/OpenAPI |
 | 3 | นางสาวปภาวรินทร์ นาเมืองรักษ์| 673380275-5 | phapawarin.n@kkumail.com | 02 | `phapawarin_6733802755_02` | **System Architecture & Cloud/DevOps:** System Boilerplate, Neon Cloud DB, Dockerfile, docker-compose.yml, Cloud Deployment & CI/CD |
-| 4 | นางสาวปรนันท์ บุสดีวงค์| 673380276-3 | poranun.b@kkumail.com | 02 | `poranun_6733802763_02` | **UI/UX Assistant & QA Specialist:** Frontend UI Layout/Spacing, API & System Testing, JUnit 5/Mockito Tests, Demo & Presentation |
+| 4 | นางสาวปรนันท์ บุสดีวงค์| 673380276-3 | poranun.b@kkumail.com | 02 | `poranun_6733802763_02` | **QA Specialist:** API & System Testing, JUnit 5/Mockito Tests, Demo & Presentation |
 | 5 | นางสาววิภาวี ฤทธิหาญ| 673380514-3 | wiphawi_ri@kkumail.com | 01 | `wiphawi_6733805143_01` | **Frontend Lead Developer:** Core Web UI Components, Page Flow, Layout, State Management & API Integration |
 
-> ⚠️ **คำเตือนเรื่อง Branch:** รูปแบบชื่อ branch ต้องเป็น `ชื่อจริง_รหัสนักศึกษา_section` ตามตัวอย่างในตารางเท่านั้น (ห้ามผิดรูปแบบเด็ดขาดเพื่อป้องกันการถูกหัก 5 คะแนน)
+> **คำเตือนเรื่อง Branch:** รูปแบบชื่อ branch ต้องเป็น `ชื่อจริง_รหัสนักศึกษา_section`
 
 ---
 
 ## Tech Stack
-- **Backend:** Spring Boot 3.x (Java 17+)
+- **Backend:** Spring Boot 3.4.3 (Java 17+)
 - **Build Tool:** Maven
 - **Database:** PostgreSQL (Neon Cloud)
 - **ORM:** Spring Data JPA (Hibernate)
@@ -36,7 +36,7 @@
 
 ## Database Design (ER Diagram)
 ใส่รูปภาพหรือลิงก์ไปยัง ER Diagram:
-- ดูรายละเอียดใน [doc/diagrams/](doc/diagrams/) และเอกสาร Data Dictionary ใน [doc/](doc/)
+- ดูรายละเอียดใน [doc/diagrams/](doc/diagrams/) และเอกสาร Data Dictionary ใน [doc/database_dictionary.md](doc/database_dictionary.md)
 
 ---
 
@@ -160,8 +160,7 @@ mvn test
 │   ├── slide/
 │   ├── solid-analysis.md
 │   ├── design-patterns.md
-│   ├── database_dictionary.md
-│   └── test-report.md
+│   └── database_dictionary.md
 └── img/                         # ไฟล์มัลติมีเดียประกอบ
 ```
 
