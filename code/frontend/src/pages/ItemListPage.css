@@ -98,16 +98,32 @@
 
 @media (max-width: 800px) {
     .item-list-main {
-        margin-left: 210px;
-        padding: 20px;
+        margin-left: 0;
+        padding: 14px 16px 20px;
     }
 
     .top-bar {
-        align-items: flex-start;
-        flex-direction: column;
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 14px;
+    }
+
+    .top-bar .user-header-bar {
+        align-self: flex-end;
+        min-height: 42px;
+    }
+
+    .search-box {
+        width: 100%;
     }
 
     .item-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 500px) {
+    .item-grid {
+        grid-template-columns: minmax(0, 1fr);
     }
 }

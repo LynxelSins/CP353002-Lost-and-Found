@@ -210,8 +210,8 @@
 
 @media (max-width: 800px) {
     .profile-main {
-        margin-left: 210px;
-        padding: 20px;
+        margin-left: 0;
+        padding: 70px 16px 20px;
     }
 
     .profile-account-body {
