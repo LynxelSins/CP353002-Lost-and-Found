@@ -14,6 +14,6 @@
 
 | Pattern | ปัญหาที่แก้ | ไฟล์/คลาสที่ใช้ | Diagram อ้างอิง |
 |---|---|---|---|
-| **State** | ควบคุมการเปลี่ยน `Report.status` ให้ถูกต้องตาม workflow (OPEN → MATCH_PENDING → CLAIMED → CLOSED หรือ REJECTED) | `service/ReportStatusChanger.java`, `service/state/ReportState.java` (interface) + `OpenState`, `MatchPendingState`, `ClaimedState`, `ClosedState`, `RejectedState` | `doc/diagrams/class-diagram-with-patterns.md`, `doc/diagrams/State Diagram` |
+| **State** | ควบคุมการเปลี่ยน `Report.status` ให้ถูกต้องตาม workflow (OPEN → MATCH_PENDING → CLAIMED → CLOSED หรือ REJECTED) | `service/ReportStatusChanger.java`, `service/state/ReportState.java` (interface) + `OpenState`, `MatchPendingState`, `ClaimedState`, `ClosedState`, `RejectedState` | `doc/diagrams/Class Diagram.pdf`, `doc/diagrams/State Diagram` |
 | **Observer** | แจ้งเตือนผู้ติดตาม (`report_watchers`) อัตโนมัติทุกครั้งที่สถานะ `Report` เปลี่ยน | `event/ReportStatusChangedEvent.java`, `event/ReportStatusEventListener.java` (ใช้ Spring `ApplicationEventPublisher`), `service/NotificationService.java` | `doc/diagrams/class-diagram-with-patterns.md` |
 | **Strategy** | ตรวจสิทธิ์การยื่นเคลมที่กติกาต่างกันตาม `ReportType` (LOST vs FOUND) | `service/strategy/ClaimEligibilityStrategy.java` (interface), `LostReportClaimEligibilityStrategy.java`, `FoundReportClaimEligibilityStrategy.java`, `ClaimEligibilityStrategyResolver.java` | `doc/diagrams/class-diagram-with-patterns.md` |

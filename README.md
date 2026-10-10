@@ -1,5 +1,5 @@
 # ระบบส่งคืนของหาย Lost and Found (กลุ่มที่ 12)
-ระบบแจ้งของหายและติดตามการส่งคืนของที่พบ (Traffy Fondue Style) พัฒนาด้วย Spring Boot 3.x ตามสถาปัตยกรรมแบบ Layered Architecture พร้อมเชื่อมต่อกับฐานข้อมูล PostgreSQL บน Neon Cloud เพื่อให้การติดตามสถานะสิ่งของ การพิสูจน์ความเป็นเจ้าของ และการส่งมอบของคืนเป็นไปอย่างมีประสิทธิภาพ โปร่งใส และตรวจสอบได้จริง
+ระบบแจ้งของหายและติดตามการส่งคืนของที่พบ (Traffy Fondue Style) พัฒนาด้วย Spring Boot 3.4.3 ตามสถาปัตยกรรมแบบ Layered Architecture พร้อมเชื่อมต่อกับฐานข้อมูล PostgreSQL บน Neon Cloud เพื่อให้การติดตามสถานะสิ่งของ การพิสูจน์ความเป็นเจ้าของ และการส่งมอบของคืนเป็นไปอย่างมีประสิทธิภาพ โปร่งใส และตรวจสอบได้จริง
 
 ## สมาชิกกลุ่ม (กลุ่มที่ 12)
 | ลำดับ | ชื่อ-นามสกุล | รหัสนักศึกษา | Email | Section | Branch| หน้าที่รับผิดชอบ |
@@ -15,44 +15,99 @@
 ---
 
 ## Tech Stack
-- **Backend:** Spring Boot 3.4.3 (Java 17+)
-- **Build Tool:** Maven
-- **Database:** PostgreSQL (Neon Cloud)
-- **ORM:** Spring Data JPA (Hibernate)
-- **Authentication:** Spring Security + JWT, Firebase Authentication (Google Login)
-- **API Documentation:** Swagger / OpenAPI (Springdoc)
-- **Frontend:** React (Vite)
+| หมวดหมู่ | เทคโนโลยีที่ใช้ |
+| :--- | :--- |
+| Backend Framework | Spring Boot 3.4.3 (Java 17) |
+| Build Tool | Maven |
+| Database | PostgreSQL 16 (Neon Cloud สำหรับระบบที่ Deploy, Docker สำหรับรันในเครื่อง) |
+| ORM | Spring Data JPA (Hibernate) |
+| Authentication | Spring Security + JWT, Firebase Authentication (Google Login) |
+| API Documentation | Swagger / OpenAPI (Springdoc) |
+| Frontend | React (Vite) |
+| Testing | JUnit 5, Mockito, Spring Boot Test, Testcontainers, JaCoCo 0.8.12 |
+| Containerization | Docker, Docker Compose |
+| Deployment | Render |
+| CI/CD | GitHub Actions |
+| Version Control | Git, GitHub |
 
 ---
 
 ## System Architecture
-อธิบายสถาปัตยกรรม Layered Architecture ของระบบ:
-- **Presentation Layer:** Controller / RestController / Views
-- **Service Layer:** Business Logic & Transactions
-- **Repository Layer:** Data Access Layer (Spring Data JPA)
-- **Domain / Entity:** Entities, Value Objects, Enums & DTOs
+ระบบใช้สถาปัตยกรรมแบบ Layered Architecture แบ่งเป็น 4 ชั้น โดยแต่ละชั้นเรียกใช้ชั้นที่อยู่ถัดไปเท่านั้น (Controller ไม่เรียก Repository โดยตรง)
+
+- **Presentation Layer:** `controller/api` (RestController) รับคำร้อง HTTP และส่งผลลัพธ์เป็น JSON
+- **Service Layer:** `service` และ `service/impl` ประมวลผล Business Logic และควบคุม Transaction
+- **Repository Layer:** `repository` เข้าถึงข้อมูลผ่าน Spring Data JPA
+- **Domain / Entity:** `domain/entity`, `domain/enums` นิยามโครงสร้างข้อมูลหลักของระบบ
+
+ชั้นสนับสนุน ได้แก่ `dto` + `mapper` (แยก Entity ออกจาก API Contract), `exception` (Global Exception Handler), `security` และ `config` (JWT, Firebase, Swagger)
+
+Design Pattern ที่ใช้
+- Enterprise Pattern: Layered Architecture, MVC, Repository, Service Layer, DTO + Mapper, Dependency Injection
+- GoF (กลุ่ม Behavioral): State (สถานะของ Report), Observer (แจ้งเตือนผู้ติดตามเมื่อสถานะเปลี่ยน), Strategy (ตรวจสิทธิ์การยื่นเคลมตามประเภทประกาศ LOST/FOUND)
+
+รายละเอียดดูที่ [doc/design-patterns.md](doc/design-patterns.md) และ [doc/solid-analysis.md](doc/solid-analysis.md)
+
+![Component Diagram](doc/diagrams/DiagramPNG/Component%20Diagram.png)
+
+แผนภาพอื่น ๆ (Use Case, Domain Model, Class, Sequence, Activity, State ของ Report และ Claim, Deployment) อยู่ใน [doc/diagrams/](doc/diagrams/) (ไฟล์ PDF และ PNG ใน `DiagramPNG/`)
 
 ---
 
 ## Database Design (ER Diagram)
-ใส่รูปภาพหรือลิงก์ไปยัง ER Diagram:
-- ดูรายละเอียดใน [doc/diagrams/](doc/diagrams/) และเอกสาร Data Dictionary ใน [doc/database_dictionary.md](doc/database_dictionary.md)
+ฐานข้อมูลมี 12 ตาราง ได้แก่ users, user_profiles, categories, tags, reports, report_images, report_status_logs, report_watchers, claims, report_tags, notifications และ stored_files
+
+- ใช้กลยุทธ์ Hybrid ID: ตารางที่ผู้ใช้เข้าถึงผ่าน URL โดยตรง (users, reports, claims ฯลฯ) ใช้ UUID ส่วนตารางข้อมูลหลักและตารางภายในใช้ BIGINT
+- ความสัมพันธ์ One-to-One (users - user_profiles), One-to-Many (เช่น users - reports, reports - claims) และ Many-to-Many (reports - tags ผ่าน report_tags)
+- มี Foreign Key, Index บนคอลัมน์ที่ค้นหาบ่อย และ Partial Unique Index (`idx_unique_pending_claim`) กันการยื่นเคลมสถานะ PENDING ซ้ำบนประกาศเดียวกัน
+- โครงสร้างฐานข้อมูลถูกกำหนดจาก `code/src/main/resources/schema.sql` (Hibernate ตั้งเป็น `validate`)
+
+![ER Diagram](doc/diagrams/DiagramPNG/ER%20Diagram.png)
+
+ดู Data Dictionary ที่ [doc/database_dictionary.md](doc/database_dictionary.md)
 
 ---
 
 ## Installation & Setup
-ขั้นตอนการติดตั้งและตั้งค่า Environment:
+
+**สิ่งที่ต้องติดตั้งก่อน**
+- JDK 17 ขึ้นไป และ Maven 3.9 ขึ้นไป
+- Node.js 20 ขึ้นไป (สำหรับ Frontend)
+- Docker Desktop (สำหรับ Docker Compose, PostgreSQL ในเครื่อง และ Integration Test)
+
 ```bash
 # Clone repository
 git clone https://github.com/LynxelSins/CP353002-Lost-and-Found.git
 cd CP353002-Lost-and-Found
 ```
 
-**Backend:** ตั้งค่า Environment Variable สำหรับเชื่อมต่อฐานข้อมูล Neon Cloud ก่อนรัน (ดูตัวแปรที่ต้องตั้งใน `code/src/main/resources/application-neon.yml`) หรือใช้ `application-dev.yml` เพื่อรันกับ PostgreSQL บนเครื่องตัวเองผ่าน Docker แทน
+**Backend**
+- Profile เริ่มต้นคือ `neon` (กำหนดใน `code/src/main/resources/application.properties`) ค่าเชื่อมต่อฐานข้อมูล Neon Cloud อยู่ใน `application-neon.yml` จึงรันได้ทันทีโดยไม่ต้องตั้งค่าเพิ่ม
+- หากต้องการใช้ PostgreSQL ในเครื่อง ให้เปิดฐานข้อมูลด้วย Docker แล้วรันด้วย profile `dev` (ค่าเชื่อมต่ออยู่ใน `application-dev.yml`)
+  ```bash
+  docker compose up -d postgres
+  cd code
+  mvn spring-boot:run -Dspring-boot.run.profiles=dev
+  ```
+- ตอนเริ่มระบบ Spring จะรัน `schema.sql` และถ้าตาราง users ยังว่างจะโหลดข้อมูลตัวอย่างจาก `seed-data.sql` ให้อัตโนมัติ
+- Firebase Admin SDK อ่านไฟล์ `code/src/main/resources/firebase-service-account.json` (ดูหัวข้อ หมายเหตุเรื่อง Credentials ด้านล่าง)
+- ตัวแปร Environment ที่ override ได้ (ไม่บังคับ)
 
-**Frontend:** ตั้งค่า Firebase ใน `code/frontend/firebase-config.js` และตัวแปร `VITE_API_BASE_URL` ให้ชี้ไปที่ Backend (ดีฟอลต์ `http://localhost:8080`)
+| ตัวแปร | ความหมาย | ค่าเริ่มต้น |
+| :--- | :--- | :--- |
+| `SPRING_PROFILES_ACTIVE` | Profile ที่ใช้ (`neon` หรือ `dev`) | `neon` |
+| `PORT` | พอร์ตของ Backend | `8080` |
+| `JWT_SECRET` | คีย์ลับสำหรับเซ็น JWT (ควรตั้งเองบนระบบที่ Deploy) | ค่า dev ในไฟล์ตั้งค่า |
+| `JWT_EXPIRATION_MS` | อายุ Token (มิลลิวินาที) | `86400000` |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | ที่อยู่ไฟล์ Firebase service account | `firebase-service-account.json` |
+| `APP_UPLOAD_DIR` | โฟลเดอร์เก็บไฟล์อัปโหลด | `uploads` |
 
-ตั้งค่าฐานข้อมูลใน `code/src/main/resources/application.properties` หรือ `application.yml`
+**Frontend**
+- ตั้งค่า Firebase (Google Login) ที่ `code/frontend/src/firebase.js`
+- ตัวแปร `VITE_API_BASE_URL` คือ URL ของ Backend (ค่าเริ่มต้น `http://localhost:8080`) หากต้องการเปลี่ยนให้สร้างไฟล์ `code/frontend/.env` เช่น
+  ```
+  VITE_API_BASE_URL=http://localhost:8080
+  ```
 
 ---
 
@@ -67,22 +122,21 @@ cd CP353002-Lost-and-Found
 cd code
 mvn spring-boot:run
 ```
-Backend จะรันที่ `http://localhost:8080`
+Backend จะรันที่ `http://localhost:8080` (เชื่อมต่อ Neon Cloud ตาม profile เริ่มต้น หากต้องการฐานข้อมูลในเครื่องให้ดูหัวข้อ Installation & Setup)
 
 **Terminal ที่ 2 Frontend:**
 ```bash
-cd code
-cd frontend
+cd code/frontend
 npm install
 npm run dev
 ```
 Frontend จะรันที่ `http://localhost:5173`
 
-### แบบรันทั้งระบบพร้อมฐานข้อมูล (Docker Compose)
+### แบบรันทั้งระบบ (Docker Compose)
 ```bash
 docker compose up --build
 ```
-รัน Backend (`:8080`), Frontend (`:5173`), PostgreSQL (`:5432`) และ pgAdmin (`:5050`) พร้อมกันทั้งหมด
+รัน Backend (`:8080`), Frontend (`:5173`), PostgreSQL (`:5432`) และ pgAdmin (`:5050`) พร้อมกัน โดย Backend ใน Compose ใช้ profile `neon` (เชื่อมต่อ Neon Cloud) เป็นค่าเริ่มต้น ส่วน PostgreSQL และ pgAdmin ในเครื่องเปิดไว้ให้ใช้เมื่อสลับเป็น profile `dev` (ดูตัวอย่างที่คอมเมนต์ไว้ใน `docker-compose.yml`)
 
 ปิดด้วย
 ```bash
@@ -93,17 +147,59 @@ docker compose down
 
 ## API Documentation
 - **Swagger UI:** `http://localhost:8080/swagger-ui.html`
-- **OpenAPI Docs:** `http://localhost:8080/v3/api-docs`
+- **OpenAPI Docs (JSON):** `http://localhost:8080/api-docs`
+- Endpoint ทั้งหมดอยู่ภายใต้ `/api/v1` (เช่น `/api/v1/reports`, `/api/v1/claims`, `/api/v1/auth`)
+- Endpoint ที่ต้องยืนยันตัวตนให้เรียก `/api/v1/auth/login` เพื่อรับ JWT แล้วกด Authorize ใน Swagger UI
+
+**รายการ Endpoint หลัก (ตรงกับ Controller ในโค้ด)**
+
+| กลุ่ม | Method และ Path |
+| :--- | :--- |
+| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/google` |
+| User | `GET /users/me`, `PATCH /users/me`, `PATCH /users/me/password`, `DELETE /users/me/password` |
+| Report | `POST /reports`, `GET /reports`, `GET /reports/{id}`, `GET /reports/mine`, `GET /reports/watched`, `POST /reports/{id}/close` |
+| Watch | `POST /reports/{id}/watch`, `DELETE /reports/{id}/watch` |
+| Claim | `POST /reports/{id}/claims`, `GET /reports/{id}/claims`, `GET /claims/mine`, `PATCH /claims/{id}/approve`, `PATCH /claims/{id}/reject` |
+| Category | `GET /categories`, `GET /categories/{id}`, `POST /categories`, `PUT /categories/{id}`, `DELETE /categories/{id}` |
+| Tag | `GET /tags`, `GET /tags/{id}`, `POST /tags`, `PUT /tags/{id}`, `DELETE /tags/{id}` |
+| Notification | `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/{id}/read`, `PATCH /notifications/read-all` |
+| File | `POST /uploads`, `GET /files/{id}` |
+| Admin (Staff) | `DELETE /admin/reports/{id}` |
+
+(ทุก Path ขึ้นต้นด้วย `/api/v1`)
 
 ---
 
 ## How to Run Tests
-คำสั่งสำหรับรัน Unit Test และ Integration Test:
+โค้ดทดสอบอยู่ที่ `code/src/test/` ส่วนรายงานผลการทดสอบและภาพประกอบอยู่ที่ [test/](test/) (ดู [test/test-report.md](test/test-report.md))
+
+**Unit Test (JUnit 5 + Mockito)** ไม่ต้องใช้ Docker
 ```bash
 cd code
 mvn test
 ```
-ผลการทดสอบจะอยู่ที่ `code/target/surefire-reports/`
+
+**Integration Test (Testcontainers + PostgreSQL จริง)** ต้องเปิด Docker ไว้ และถูกข้ามในการรัน `mvn test` ปกติ ต้องรันแยก
+```bash
+cd code
+mvn test -Dtest=ClaimFlowIntegrationTest -DexcludeIntegrationTests=
+```
+
+**สรุปผลการทดสอบ** (รายละเอียดเต็มใน [test/test-report.md](test/test-report.md))
+
+| ประเภท | จำนวนกรณี | ผ่าน |
+| :--- | :---: | :---: |
+| Unit Test (`mvn test`) | 116 | 116 |
+| Integration Test (Testcontainers) | 5 | 5 |
+| API Test (Swagger UI) | 22 | 22 |
+| Authentication/Authorization Test | 5 | 5 |
+| Frontend Functional Test | 6 | 6 |
+
+Code Coverage (JaCoCo): Instruction 63%, Branch 60%, Line 62%, Method 61%, Class 82%
+
+**ผลการทดสอบ**
+- รายงานจาก Surefire: `code/target/surefire-reports/`
+- รายงาน Code Coverage (JaCoCo): `code/target/site/jacoco/index.html` (สร้างหลังรัน `mvn test`)
 
 ---
 
@@ -125,43 +221,73 @@ mvn test
 - **Production URL (Frontend):** `https://cp353002-lost-and-found.onrender.com/items`
 - **Swagger UI (Backend, Cloud):** `https://lostandfound-backend-wp7i.onrender.com/swagger-ui/index.html`
 
+การ Deploy อัตโนมัติ: เมื่อมีการ push เข้า `main` GitHub Actions (`.github/workflows/cd.yml`) จะเรียก Deploy Hook ของ Render ส่วน `.github/workflows/maven.yml` ทำหน้าที่ Build และรัน Unit Test (`mvn test`) เมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main` โดยขั้นตอนรันเทสตั้งเป็น `continue-on-error` ผลเทสจึงแสดงเป็นรายงานแต่ไม่ทำให้ Pipeline ล้มเหลว และ CI ไม่รัน Integration Test (ต้องใช้ Docker ให้รันเองตามหัวข้อ How to Run Tests)
+
 ---
 
 ## Project Structure
 ```text
 .
-├── code/                       # Source code และ Configuration
+├── code/                           # Source code และ Configuration
 │   ├── src/main/java/com/example/lostandfound/
-│   │   ├── common/             # AuditableEntity, ImmutableEntity (Base class)
-│   │   ├── config/             # Security, Swagger, Firebase, DataSeeder
-│   │   ├── controller/api/     # REST Controllers
-│   │   ├── domain/entity/      # JPA Entities
-│   │   ├── domain/enums/       # Enums
-│   │   ├── dto/request/        # Request DTOs
-│   │   ├── dto/response/       # Response DTOs
-│   │   ├── event/              # Observer Pattern (ReportStatusChangedEvent)
-│   │   ├── exception/          # Global Exception Handler
-│   │   ├── mapper/             # Entity <-> DTO Mapper
-│   │   ├── repository/         # Spring Data JPA Repository
-│   │   ├── security/           # JWT Filter, UserPrincipal
-│   │   ├── service/            # Service interface + ReportStatusChanger
-│   │   │   ├── impl/           # Service implementation
-│   │   │   ├── state/          # State Pattern (ReportState)
-│   │   │   └── strategy/       # Strategy Pattern (ClaimEligibilityStrategy)
+│   │   ├── common/                 # AuditableEntity, ImmutableEntity (Base class)
+│   │   ├── config/                 # SecurityConfig, OpenApiConfig, FirebaseConfig, WebConfig, PasswordEncoderConfig, DataSeeder
+│   │   ├── controller/api/         # REST Controllers
+│   │   ├── domain/entity/          # JPA Entities
+│   │   ├── domain/enums/           # Enums
+│   │   ├── dto/request/            # Request DTOs
+│   │   ├── dto/response/           # Response DTOs
+│   │   ├── event/                  # Observer Pattern (ReportStatusChangedEvent, ReportStatusEventListener)
+│   │   ├── exception/              # Global Exception Handler
+│   │   ├── mapper/                 # Entity <-> DTO Mapper
+│   │   ├── repository/             # Spring Data JPA Repository
+│   │   ├── security/               # JwtUtil, JWT Filter, UserPrincipal, RestAuthenticationEntryPoint, RestAccessDeniedHandler
+│   │   ├── service/                # Service interface + ReportStatusChanger
+│   │   │   ├── impl/               # Service implementation
+│   │   │   ├── state/              # State Pattern (ReportState และ Open/MatchPending/Claimed/Closed/Rejected)
+│   │   │   └── strategy/           # Strategy Pattern (ClaimEligibilityStrategy, Lost/Found, Resolver)
 │   │   └── LostAndFoundApplication.java
-│   ├── src/main/resources/     # schema.sql, seed-data.sql, application*.yml
-│   ├── src/test/               # Unit/Integration Tests
-│   ├── frontend/               # React (Vite) Frontend
+│   ├── src/main/resources/         # schema.sql, seed-data.sql, application.properties, application-dev.yml, application-neon.yml, firebase-service-account.json
+│   ├── src/test/
+│   │   ├── java/com/example/lostandfound/
+│   │   │   ├── controller/api/     # Controller Test (Admin, Auth, Category, Claim, FileUpload, Notification, Report, Tag, User)
+│   │   │   ├── service/            # ReportStatusChangerTest
+│   │   │   │   ├── impl/           # Service Test (Auth, Category, Claim, Notification, Report, Tag, User)
+│   │   │   │   └── strategy/       # ClaimEligibilityStrategyTest
+│   │   │   ├── mapper/             # ClaimMapperTest
+│   │   │   ├── integration/        # ClaimFlowIntegrationTest (Testcontainers)
+│   │   │   ├── AbstractIntegrationTest.java
+│   │   │   └── LostAndFoundApplicationTest.java
+│   │   └── resources/              # application-test.properties
+│   ├── frontend/                   # React (Vite) Frontend
+│   │   ├── src/
+│   │   │   ├── api/                # เรียก Backend (client.js, authApi, reportApi, claimApi ฯลฯ)
+│   │   │   ├── components/         # UI Components (Sidebar, ItemCard, FilterBar, ClaimModel, NotificationBell ฯลฯ)
+│   │   │   ├── pages/              # หน้าเว็บ (Auth, ItemList, ItemDetail, CreateReport, MyItems, Profile)
+│   │   │   ├── hooks/              # Custom Hook (useFormValidation)
+│   │   │   ├── firebase.js         # ตั้งค่า Firebase (Google Login)
+│   │   │   └── App.jsx, main.jsx
+│   │   ├── Dockerfile, nginx.conf, vite.config.js, package.json
+│   │   └── firebase-config.js
 │   ├── Dockerfile
 │   └── pom.xml
-├── docker-compose.yml          # Full stack (frontend + backend + postgres + pgadmin)
-├── doc/                        # เอกสารทั้งหมด
-│   ├── diagrams/                # Use Case, Class, ER, Sequence ฯลฯ
-│   ├── slide/
+├── test/                           # รายงานผลการทดสอบ
+│   ├── test-report.md
+│   ├── images/                     # ภาพประกอบผลการรันเทส
+│   └── ภาพเพิ่มเติม API Test.pdf
+├── doc/                            # เอกสารทั้งหมดและสไลด์
+│   ├── diagrams/                   # Use Case, Domain Model, Class, ER, Sequence, Activity, State, Component, Deployment (PDF)
+│   │   └── DiagramPNG/             # แผนภาพเดียวกันในรูปแบบ PNG (State แยก Report Status และ Claim Status)
+│   ├── slide/                      # สไลด์นำเสนอ (outline.md)
+│   ├── taskDetail/                 # ใบงานและเอกสารประกอบการทำงาน
 │   ├── solid-analysis.md
 │   ├── design-patterns.md
 │   └── database_dictionary.md
-└── img/                         # ไฟล์มัลติมีเดียประกอบ
+├── img/                            # ภาพดีไซน์หน้าเว็บ
+├── .github/workflows/              # CI/CD (maven.yml, cd.yml)
+├── docker-compose.yml              # Full stack (frontend + backend + postgres + pgadmin)
+├── package.json, package-lock.json, neon.ts   # ไฟล์ตั้งค่าที่ root (Neon / Firebase dependency)
+└── .oxlintrc.json                  # ตั้งค่า Oxlint
 ```
 
 ---
