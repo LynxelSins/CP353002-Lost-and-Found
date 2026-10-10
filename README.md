@@ -12,6 +12,8 @@
 
 > **คำเตือนเรื่อง Branch:** รูปแบบชื่อ branch ต้องเป็น `ชื่อจริง_รหัสนักศึกษา_section`
 
+ดูรายงานได้ที่ [รายงาน-Lost-and-Found.pdf](doc/รายงาน-Lost-and-Found.pdf)
+
 ---
 
 ## Tech Stack
@@ -282,7 +284,8 @@ Code Coverage (JaCoCo): Instruction 63%, Branch 60%, Line 62%, Method 61%, Class
 │   ├── taskDetail/                 # ใบงานและเอกสารประกอบการทำงาน
 │   ├── solid-analysis.md
 │   ├── design-patterns.md
-│   └── database_dictionary.md
+│   ├── database_dictionary.md
+│   └── รายงาน-Lost-and-Found.pdf   # เล่มรายงาน
 ├── img/                            # ภาพดีไซน์หน้าเว็บ
 ├── .github/workflows/              # CI/CD (maven.yml, cd.yml)
 ├── docker-compose.yml              # Full stack (frontend + backend + postgres + pgadmin)
