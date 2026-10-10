@@ -50,7 +50,7 @@ Design Pattern ที่ใช้
 
 ![Component Diagram](doc/diagrams/DiagramPNG/Component%20Diagram.png)
 
-แผนภาพอื่น ๆ (Use Case, Class, Sequence, Activity, State, Deployment) อยู่ใน [doc/diagrams/](doc/diagrams/)
+แผนภาพอื่น ๆ (Use Case, Domain Model, Class, Sequence, Activity, State ของ Report และ Claim, Deployment) อยู่ใน [doc/diagrams/](doc/diagrams/) (ไฟล์ PDF และ PNG ใน `DiagramPNG/`)
 
 ---
 
@@ -151,6 +151,23 @@ docker compose down
 - Endpoint ทั้งหมดอยู่ภายใต้ `/api/v1` (เช่น `/api/v1/reports`, `/api/v1/claims`, `/api/v1/auth`)
 - Endpoint ที่ต้องยืนยันตัวตนให้เรียก `/api/v1/auth/login` เพื่อรับ JWT แล้วกด Authorize ใน Swagger UI
 
+**รายการ Endpoint หลัก (ตรงกับ Controller ในโค้ด)**
+
+| กลุ่ม | Method และ Path |
+| :--- | :--- |
+| Auth | `POST /auth/register`, `POST /auth/login`, `POST /auth/google` |
+| User | `GET /users/me`, `PATCH /users/me`, `PATCH /users/me/password`, `DELETE /users/me/password` |
+| Report | `POST /reports`, `GET /reports`, `GET /reports/{id}`, `GET /reports/mine`, `GET /reports/watched`, `POST /reports/{id}/close` |
+| Watch | `POST /reports/{id}/watch`, `DELETE /reports/{id}/watch` |
+| Claim | `POST /reports/{id}/claims`, `GET /reports/{id}/claims`, `GET /claims/mine`, `PATCH /claims/{id}/approve`, `PATCH /claims/{id}/reject` |
+| Category | `GET /categories`, `GET /categories/{id}`, `POST /categories`, `PUT /categories/{id}`, `DELETE /categories/{id}` |
+| Tag | `GET /tags`, `GET /tags/{id}`, `POST /tags`, `PUT /tags/{id}`, `DELETE /tags/{id}` |
+| Notification | `GET /notifications`, `GET /notifications/unread-count`, `PATCH /notifications/{id}/read`, `PATCH /notifications/read-all` |
+| File | `POST /uploads`, `GET /files/{id}` |
+| Admin (Staff) | `DELETE /admin/reports/{id}` |
+
+(ทุก Path ขึ้นต้นด้วย `/api/v1`)
+
 ---
 
 ## How to Run Tests
@@ -167,6 +184,18 @@ mvn test
 cd code
 mvn test -Dtest=ClaimFlowIntegrationTest -DexcludeIntegrationTests=
 ```
+
+**สรุปผลการทดสอบ** (รายละเอียดเต็มใน [test/test-report.md](test/test-report.md))
+
+| ประเภท | จำนวนกรณี | ผ่าน |
+| :--- | :---: | :---: |
+| Unit Test (`mvn test`) | 116 | 116 |
+| Integration Test (Testcontainers) | 5 | 5 |
+| API Test (Swagger UI) | 22 | 22 |
+| Authentication/Authorization Test | 5 | 5 |
+| Frontend Functional Test | 6 | 6 |
+
+Code Coverage (JaCoCo): Instruction 63%, Branch 60%, Line 62%, Method 61%, Class 82%
 
 **ผลการทดสอบ**
 - รายงานจาก Surefire: `code/target/surefire-reports/`
@@ -192,48 +221,73 @@ mvn test -Dtest=ClaimFlowIntegrationTest -DexcludeIntegrationTests=
 - **Production URL (Frontend):** `https://cp353002-lost-and-found.onrender.com/items`
 - **Swagger UI (Backend, Cloud):** `https://lostandfound-backend-wp7i.onrender.com/swagger-ui/index.html`
 
-การ Deploy อัตโนมัติ: เมื่อมีการ push เข้า `main` GitHub Actions (`.github/workflows/cd.yml`) จะเรียก Deploy Hook ของ Render ส่วน `.github/workflows/maven.yml` ทำหน้าที่ Build และรันเทสเมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main`
+การ Deploy อัตโนมัติ: เมื่อมีการ push เข้า `main` GitHub Actions (`.github/workflows/cd.yml`) จะเรียก Deploy Hook ของ Render ส่วน `.github/workflows/maven.yml` ทำหน้าที่ Build และรัน Unit Test (`mvn test`) เมื่อ push หรือเปิด Pull Request เข้า `develop` และ `main` โดยขั้นตอนรันเทสตั้งเป็น `continue-on-error` ผลเทสจึงแสดงเป็นรายงานแต่ไม่ทำให้ Pipeline ล้มเหลว และ CI ไม่รัน Integration Test (ต้องใช้ Docker ให้รันเองตามหัวข้อ How to Run Tests)
 
 ---
 
 ## Project Structure
 ```text
 .
-├── code/                       # Source code และ Configuration
+├── code/                           # Source code และ Configuration
 │   ├── src/main/java/com/example/lostandfound/
-│   │   ├── common/             # AuditableEntity, ImmutableEntity (Base class)
-│   │   ├── config/             # Security, Swagger, Firebase, DataSeeder
-│   │   ├── controller/api/     # REST Controllers
-│   │   ├── domain/entity/      # JPA Entities
-│   │   ├── domain/enums/       # Enums
-│   │   ├── dto/request/        # Request DTOs
-│   │   ├── dto/response/       # Response DTOs
-│   │   ├── event/              # Observer Pattern (ReportStatusChangedEvent)
-│   │   ├── exception/          # Global Exception Handler
-│   │   ├── mapper/             # Entity <-> DTO Mapper
-│   │   ├── repository/         # Spring Data JPA Repository
-│   │   ├── security/           # JWT Filter, UserPrincipal
-│   │   ├── service/            # Service interface + ReportStatusChanger
-│   │   │   ├── impl/           # Service implementation
-│   │   │   ├── state/          # State Pattern (ReportState)
-│   │   │   └── strategy/       # Strategy Pattern (ClaimEligibilityStrategy)
+│   │   ├── common/                 # AuditableEntity, ImmutableEntity (Base class)
+│   │   ├── config/                 # SecurityConfig, OpenApiConfig, FirebaseConfig, WebConfig, PasswordEncoderConfig, DataSeeder
+│   │   ├── controller/api/         # REST Controllers
+│   │   ├── domain/entity/          # JPA Entities
+│   │   ├── domain/enums/           # Enums
+│   │   ├── dto/request/            # Request DTOs
+│   │   ├── dto/response/           # Response DTOs
+│   │   ├── event/                  # Observer Pattern (ReportStatusChangedEvent, ReportStatusEventListener)
+│   │   ├── exception/              # Global Exception Handler
+│   │   ├── mapper/                 # Entity <-> DTO Mapper
+│   │   ├── repository/             # Spring Data JPA Repository
+│   │   ├── security/               # JwtUtil, JWT Filter, UserPrincipal, RestAuthenticationEntryPoint, RestAccessDeniedHandler
+│   │   ├── service/                # Service interface + ReportStatusChanger
+│   │   │   ├── impl/               # Service implementation
+│   │   │   ├── state/              # State Pattern (ReportState และ Open/MatchPending/Claimed/Closed/Rejected)
+│   │   │   └── strategy/           # Strategy Pattern (ClaimEligibilityStrategy, Lost/Found, Resolver)
 │   │   └── LostAndFoundApplication.java
-│   ├── src/main/resources/     # schema.sql, seed-data.sql, application*.yml, application.properties
-│   ├── src/test/               # Unit Test / Integration Test (JUnit 5, Mockito, Testcontainers)
-│   ├── frontend/               # React (Vite) Frontend
+│   ├── src/main/resources/         # schema.sql, seed-data.sql, application.properties, application-dev.yml, application-neon.yml, firebase-service-account.json
+│   ├── src/test/
+│   │   ├── java/com/example/lostandfound/
+│   │   │   ├── controller/api/     # Controller Test (Admin, Auth, Category, Claim, FileUpload, Notification, Report, Tag, User)
+│   │   │   ├── service/            # ReportStatusChangerTest
+│   │   │   │   ├── impl/           # Service Test (Auth, Category, Claim, Notification, Report, Tag, User)
+│   │   │   │   └── strategy/       # ClaimEligibilityStrategyTest
+│   │   │   ├── mapper/             # ClaimMapperTest
+│   │   │   ├── integration/        # ClaimFlowIntegrationTest (Testcontainers)
+│   │   │   ├── AbstractIntegrationTest.java
+│   │   │   └── LostAndFoundApplicationTest.java
+│   │   └── resources/              # application-test.properties
+│   ├── frontend/                   # React (Vite) Frontend
+│   │   ├── src/
+│   │   │   ├── api/                # เรียก Backend (client.js, authApi, reportApi, claimApi ฯลฯ)
+│   │   │   ├── components/         # UI Components (Sidebar, ItemCard, FilterBar, ClaimModel, NotificationBell ฯลฯ)
+│   │   │   ├── pages/              # หน้าเว็บ (Auth, ItemList, ItemDetail, CreateReport, MyItems, Profile)
+│   │   │   ├── hooks/              # Custom Hook (useFormValidation)
+│   │   │   ├── firebase.js         # ตั้งค่า Firebase (Google Login)
+│   │   │   └── App.jsx, main.jsx
+│   │   ├── Dockerfile, nginx.conf, vite.config.js, package.json
+│   │   └── firebase-config.js
 │   ├── Dockerfile
 │   └── pom.xml
-├── test/                       # รายงานผลการทดสอบ (test-report.md), ภาพประกอบ, ผล API Test
-├── doc/                        # เอกสารทั้งหมดและสไลด์
-│   ├── diagrams/               # Use Case, Class, ER, Sequence, Activity, State ฯลฯ
-│   ├── slide/                  # สไลด์นำเสนอ
-│   ├── taskDetail/             # ใบงานและเอกสารประกอบการทำงาน
+├── test/                           # รายงานผลการทดสอบ
+│   ├── test-report.md
+│   ├── images/                     # ภาพประกอบผลการรันเทส
+│   └── ภาพเพิ่มเติม API Test.pdf
+├── doc/                            # เอกสารทั้งหมดและสไลด์
+│   ├── diagrams/                   # Use Case, Domain Model, Class, ER, Sequence, Activity, State, Component, Deployment (PDF)
+│   │   └── DiagramPNG/             # แผนภาพเดียวกันในรูปแบบ PNG (State แยก Report Status และ Claim Status)
+│   ├── slide/                      # สไลด์นำเสนอ (outline.md)
+│   ├── taskDetail/                 # ใบงานและเอกสารประกอบการทำงาน
 │   ├── solid-analysis.md
 │   ├── design-patterns.md
 │   └── database_dictionary.md
-├── img/                        # ไฟล์มัลติมีเดียประกอบ (ภาพดีไซน์หน้าเว็บ)
-├── .github/workflows/          # CI/CD (maven.yml, cd.yml)
-└── docker-compose.yml          # Full stack (frontend + backend + postgres + pgadmin)
+├── img/                            # ภาพดีไซน์หน้าเว็บ
+├── .github/workflows/              # CI/CD (maven.yml, cd.yml)
+├── docker-compose.yml              # Full stack (frontend + backend + postgres + pgadmin)
+├── package.json, package-lock.json, neon.ts   # ไฟล์ตั้งค่าที่ root (Neon / Firebase dependency)
+└── .oxlintrc.json                  # ตั้งค่า Oxlint
 ```
 
 ---
